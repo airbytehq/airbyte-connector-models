@@ -1,6 +1,16 @@
 name: Generate Connector Models
 
 on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "PR Number"
+        type: string
+        required: false
+      comment-id:
+        description: "Comment ID (Optional)"
+        type: string
+        required: false
   workflow_call:
     inputs:
       trigger:
@@ -21,11 +31,34 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: generate-command-${{ inputs.trigger }}
+  group: generate-command-${{ github.event_name }}-${{ github.event.inputs.pr || inputs.trigger }}
   cancel-in-progress: true
 
 jobs:
-  generate:
+  # Slash command job - uses poe-command-processor
+  run-generate-slash:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate as GitHub App (if available)
+        uses: actions/create-github-app-token@v1
+        id: get-app-token
+        continue-on-error: true
+        with:
+          app-id: ${{ secrets.OCTAVIA_BOT_APP_ID }}
+          private-key: ${{ secrets.OCTAVIA_BOT_PRIVATE_KEY }}
+
+      - name: Run Poe Generate Command
+        uses: aaronsteers/poe-command-processor@v1.3.3
+        with:
+          pr: ${{ github.event.inputs.pr }}
+          comment-id: ${{ github.event.inputs.comment-id }}
+          github-token: ${{ steps.get-app-token.outputs.token || secrets.GITHUB_TOKEN }}
+          command: generate
+
+  # Nightly job - keeps existing PR creation with auto-merge
+  generate-nightly:
+    if: github.event_name == 'workflow_call'
     runs-on: ubuntu-latest
     
     steps:
