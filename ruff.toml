@@ -1,57 +1,66 @@
-# Ruff configuration
-# https://docs.astral.sh/ruff/
+# Ruff configuration for airbyte-connector-models
 
-target-version = "py38"
-line-length = 88
-indent-width = 4
+line-length = 100
+target-version = "py310"
 
 [lint]
-# Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
-# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
-# McCabe complexity (`C901`) by default.
 select = [
     "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings  
-    "F",   # Pyflakes
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
     "I",   # isort
-    "B",   # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "UP",  # pyupgrade
     "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "ANN", # flake8-annotations
+    "B",   # flake8-bugbear
+    "A",   # flake8-builtins
+    "C4",  # flake8-comprehensions
+    "DTZ", # flake8-datetimez
+    "T10", # flake8-debugger
+    "ISC", # flake8-implicit-str-concat
+    "ICN", # flake8-import-conventions
+    "PIE", # flake8-pie
+    "PT",  # flake8-pytest-style
+    "Q",   # flake8-quotes
+    "RSE", # flake8-raise
+    "RET", # flake8-return
     "SIM", # flake8-simplify
-    "RUF", # Ruff-specific rules
+    "TID", # flake8-tidy-imports
+    "ARG", # flake8-unused-arguments
+    "PTH", # flake8-use-pathlib
+    "ERA", # eradicate
+    "PL",  # pylint
+    "TRY", # tryceratops
+    "RUF", # ruff-specific rules
 ]
+
 ignore = [
-    "E501",  # line too long, handled by black
-    "B008",  # do not perform function calls in argument defaults
-    "C901",  # too complex
-    "W191",  # indentation contains tabs
+    "PLR0913", # Too many arguments
+    "TRY003", # Avoid specifying long messages outside exception class
 ]
 
-# Allow fix for all enabled rules (when `--fix`) is provided.
-fixable = ["ALL"]
-unfixable = []
+# Candidates for future enablement (quality roadmap):
+# "D",    # pydocstyle - docstring conventions
+# "S",    # flake8-bandit - security testing
+# "BLE",  # flake8-blind-except
+# "FBT",  # flake8-boolean-trap
+# "C90",  # mccabe - complexity checking
 
-# Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+# Per-file ignores for intentional design choices and generated code
+[lint.per-file-ignores]
+"airbyte_connector_models/_internal/base_record.py" = [
+    "ANN401",  # Allow Any for dict-like access methods
+]
+"airbyte_connector_models/connectors/**/config.py" = [
+    "E501",    # Line too long (generated models may have long descriptions)
+    "RUF012",  # Mutable class attributes (generated code pattern)
+    "PLR0912", # Too many branches (generated nested models)
+]
+"airbyte_connector_models/connectors/**/records.py" = [
+    "E501",    # Line too long (generated models may have long descriptions)
+    "RUF012",  # Mutable class attributes (generated code pattern)
+]
 
 [format]
-# Like Black, use double quotes for strings.
 quote-style = "double"
-
-# Like Black, indent with spaces, rather than tabs.
 indent-style = "space"
-
-# Like Black, respect magic trailing commas.
-skip-magic-trailing-comma = false
-
-# Like Black, automatically detect the appropriate line ending.
-line-ending = "auto"
-
-# Enable auto-formatting of code examples in docstrings. Markdown,
-# reStructuredText code/literal blocks and doctests are all supported.
-docstring-code-format = true
-
-# Set the line length limit used when formatting code snippets in
-# docstrings.
-docstring-code-line-length = "dynamic"

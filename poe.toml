@@ -1,0 +1,41 @@
+# Task runner configuration for airbyte-connector-models
+
+[tasks.test]
+help = "Run all tests"
+cmd = "pytest"
+
+[tasks.test-fast]
+help = "Run fast tests only"
+cmd = "pytest -m 'not slow'"
+
+[tasks.lint]
+help = "Run linting checks"
+cmd = "ruff check ."
+
+[tasks.format]
+help = "Format code"
+cmd = "ruff format ."
+
+[tasks.format-check]
+help = "Check code formatting"
+cmd = "ruff format --check ."
+
+[tasks.typecheck]
+help = "Run type checking"
+cmd = "basedpyright"
+
+[tasks.check]
+help = "Run all checks (lint, format, typecheck)"
+sequence = ["format-check", "lint", "typecheck"]
+
+[tasks.fix]
+help = "Auto-fix linting and formatting issues"
+sequence = ["format", { cmd = "ruff check --fix ." }]
+
+[tasks.generate]
+help = "Generate connector models"
+cmd = "python scripts/generate_models.py"
+
+[tasks.generate-connector]
+help = "Generate models for a specific connector"
+cmd = "python scripts/generate_models.py --connector ${connector}"

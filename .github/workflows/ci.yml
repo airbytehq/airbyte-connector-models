@@ -2,51 +2,137 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
-
-permissions:
-  contents: read
+    branches: [main]
 
 jobs:
-  test:
+  format-check:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
-
+    
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+      
+      - name: Install dependencies
+        run: |
+          uv pip install --system -e ".[dev]"
+      
+      - name: Check formatting
+        run: |
+          ruff format --check .
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v2
-      with:
-        version: "latest"
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+      
+      - name: Install dependencies
+        run: |
+          uv pip install --system -e ".[dev]"
+      
+      - name: Run linting
+        run: |
+          ruff check .
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
+  typecheck:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+      
+      - name: Install dependencies
+        run: |
+          uv pip install --system -e ".[dev]"
+      
+      - name: Run type checking
+        run: |
+          basedpyright
 
-    - name: Install dependencies
-      run: uv sync --extra dev
+  test-fast:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+      
+      - name: Install dependencies
+        run: |
+          uv pip install --system -e ".[dev]"
+      
+      - name: Run fast tests
+        run: |
+          pytest -m "not slow" --tb=short
 
-    - name: Run ruff format check
-      run: uv run ruff format --check .
-
-    - name: Run ruff linting
-      run: uv run ruff check .
-
-    - name: Run dependency analysis with deptry
-      run: uv run deptry .
-
-    - name: Run tests with pytest
-      run: uv run pytest --cov=awesome_python_template --cov-report=xml --cov-report=term
-
-    - name: Upload coverage to Codecov
-      if: matrix.python-version == '3.13'
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./coverage.xml
-        fail_ci_if_error: false
+  test-matrix:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ['3.10', '3.11', '3.12']
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+      
+      - name: Install dependencies
+        run: |
+          uv pip install --system -e ".[dev]"
+      
+      - name: Run all tests
+        run: |
+          pytest --tb=short
