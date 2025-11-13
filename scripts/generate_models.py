@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 AIRBYTE_MONOREPO_PATH = Path(os.getenv("AIRBYTE_MONOREPO_PATH", "/home/ubuntu/repos/airbyte"))
 REPO_ROOT = Path(__file__).parent.parent
+SCHEMAS_DIR = REPO_ROOT / "schemas"
 
 
 def get_connector_spec(connector_name: str) -> dict[str, Any]:
@@ -160,6 +161,188 @@ def generate_config_model(
         Path(temp_schema_path).unlink(missing_ok=True)
 
 
+def get_declarative_manifest(connector_name: str) -> dict[str, Any] | None:
+    """Fetch the declarative manifest from the Airbyte monorepo.
+
+    Args:
+        connector_name: The connector name (e.g., "source-xkcd")
+
+    Returns:
+        The manifest as a dictionary, or None if not found
+    """
+    connector_path = AIRBYTE_MONOREPO_PATH / "airbyte-integrations" / "connectors" / connector_name
+    manifest_file = connector_path / "manifest.yaml"
+
+    if not manifest_file.exists():
+        logger.debug(f"No manifest.yaml found for {connector_name}")
+        return None
+
+    try:
+        with manifest_file.open() as f:
+            manifest = yaml.safe_load(f)
+        logger.info(f"Found manifest file: {manifest_file}")
+        return manifest
+    except Exception as e:
+        logger.warning(f"Failed to parse {manifest_file}: {e}")
+        return None
+
+
+def extract_inline_schemas(manifest: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Extract inline schemas from a declarative manifest.
+
+    Args:
+        manifest: The declarative manifest
+
+    Returns:
+        Dictionary mapping stream names to their schemas
+    """
+    schemas = {}
+
+    if "schemas" in manifest:
+        for stream_name, schema in manifest["schemas"].items():
+            schemas[stream_name] = schema
+            logger.info(f"Found schema for stream: {stream_name}")
+
+    if "definitions" in manifest and "streams" in manifest["definitions"]:
+        for stream_name, stream_def in manifest["definitions"]["streams"].items():
+            if "schema_loader" in stream_def:
+                schema_loader = stream_def["schema_loader"]
+                if schema_loader.get("type") == "InlineSchemaLoader":
+                    if "schema" in schema_loader:
+                        schema = schema_loader["schema"]
+                        if isinstance(schema, dict) and "$ref" in schema:
+                            ref_path = schema["$ref"]
+                            if ref_path.startswith("#/schemas/"):
+                                schema_name = ref_path.replace("#/schemas/", "")
+                                if "schemas" in manifest and schema_name in manifest["schemas"]:
+                                    schemas[stream_name] = manifest["schemas"][schema_name]
+                                    msg = f"Resolved schema reference for stream: {stream_name}"
+                                    logger.info(msg)
+                        else:
+                            schemas[stream_name] = schema
+                            logger.info(f"Found inline schema for stream: {stream_name}")
+
+    if "streams" in manifest:
+        for stream in manifest["streams"]:
+            if isinstance(stream, dict):
+                stream_name = stream.get("name")
+                if stream_name and "schema_loader" in stream:
+                    schema_loader = stream["schema_loader"]
+                    if schema_loader.get("type") == "InlineSchemaLoader":
+                        if "schema" in schema_loader:
+                            schemas[stream_name] = schema_loader["schema"]
+                            logger.info(f"Found inline schema for stream: {stream_name}")
+
+    return schemas
+
+
+def save_schema_artifact(
+    connector_id: str,
+    connector_type: str,
+    stream_name: str,
+    schema: dict[str, Any],
+) -> Path:
+    """Save a JSON schema artifact.
+
+    Args:
+        connector_id: The connector ID (e.g., "xkcd")
+        connector_type: The connector type ("source" or "destination")
+        stream_name: The stream name
+        schema: The JSON schema
+
+    Returns:
+        Path to the saved schema file
+    """
+    schema_dir = SCHEMAS_DIR / connector_id / connector_type
+    schema_dir.mkdir(parents=True, exist_ok=True)
+
+    schema_file = schema_dir / f"{stream_name}.json"
+    with schema_file.open("w") as f:
+        json.dump(schema, f, indent=2)
+
+    logger.info(f"Saved schema artifact: {schema_file}")
+    return schema_file
+
+
+def generate_record_models(
+    connector_name: str,
+    connector_id: str,
+    schemas: dict[str, dict[str, Any]],
+    output_path: Path,
+) -> None:
+    """Generate Pydantic record models from schemas.
+
+    Args:
+        connector_name: The connector name (e.g., "source-xkcd")
+        connector_id: The connector ID (e.g., "xkcd")
+        schemas: Dictionary mapping stream names to their schemas
+        output_path: Path to write the generated models
+    """
+    logger.info(f"Generating record models for {connector_name}")
+
+    if not schemas:
+        logger.warning(f"No schemas found for {connector_name}")
+        return
+
+    combined_schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "definitions": {},
+    }
+
+    for stream_name, schema in schemas.items():
+        class_name = "".join(word.capitalize() for word in stream_name.replace("-", "_").split("_"))
+        model_name = f"{connector_id.capitalize()}{class_name}Record"
+
+        combined_schema["definitions"][model_name] = schema
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as temp_file:
+        json.dump(combined_schema, temp_file)
+        temp_schema_path = temp_file.name
+
+    try:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        header_path = REPO_ROOT / ".header.txt"
+
+        subprocess.run(
+            [
+                "datamodel-codegen",
+                "--input",
+                temp_schema_path,
+                "--output",
+                str(output_path),
+                "--input-file-type",
+                "jsonschema",
+                "--output-model-type",
+                "pydantic_v2.BaseModel",
+                "--base-class",
+                "airbyte_connector_models._internal.base_record.BaseRecordModel",
+                "--use-standard-collections",
+                "--use-union-operator",
+                "--field-constraints",
+                "--use-annotated",
+                "--keyword-only",
+                "--disable-timestamp",
+                "--use-exact-imports",
+                "--use-double-quotes",
+                "--keep-model-order",
+                "--use-schema-description",
+                "--target-python-version",
+                "3.10",
+                "--custom-file-header-path",
+                str(header_path),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        logger.info(f"Generated record models at {output_path}")
+
+    finally:
+        Path(temp_schema_path).unlink(missing_ok=True)
+
+
 def generate_models_for_connector(connector_name: str) -> None:
     """Generate models for a specific connector.
 
@@ -178,22 +361,36 @@ def generate_models_for_connector(connector_name: str) -> None:
         logger.error(f"Invalid connector name: {connector_name}")
         return
 
-    try:
-        spec = get_connector_spec(connector_name)
-    except RuntimeError:
-        logger.exception(f"Skipping {connector_name} due to spec fetch failure")
-        return
-
     base_path = Path(__file__).parent.parent / "airbyte_connector_models" / "connectors"
     connector_path = base_path / connector_id / connector_type
     config_path = connector_path / "config.py"
 
-    generate_config_model(connector_name, spec, config_path)
+    try:
+        spec = get_connector_spec(connector_name)
+        generate_config_model(connector_name, spec, config_path)
+    except RuntimeError:
+        logger.warning(f"No spec file found for {connector_name}, skipping config model generation")
 
-    (base_path / connector_id / "__init__.py").write_text(
-        f'"""Models for {connector_id} connector."""\n'
-    )
-    (connector_path / "__init__.py").write_text(f'"""Models for {connector_name}."""\n')
+    # Try to generate record models from declarative manifest
+    manifest = get_declarative_manifest(connector_name)
+    if manifest:
+        schemas = extract_inline_schemas(manifest)
+        if schemas:
+            for stream_name, schema in schemas.items():
+                save_schema_artifact(connector_id, connector_type, stream_name, schema)
+
+            records_path = connector_path / "records.py"
+            generate_record_models(connector_name, connector_id, schemas, records_path)
+        else:
+            logger.warning(f"No inline schemas found in manifest for {connector_name}")
+    else:
+        logger.warning(f"No declarative manifest found for {connector_name}")
+
+    if config_path.exists() or (connector_path / "records.py").exists():
+        (base_path / connector_id / "__init__.py").write_text(
+            f'"""Models for {connector_id} connector."""\n'
+        )
+        (connector_path / "__init__.py").write_text(f'"""Models for {connector_name}."""\n')
 
 
 def main() -> None:
@@ -227,6 +424,10 @@ def main() -> None:
             "destination-dev-null",
             "source-stripe",
             "source-github",
+            "source-xkcd",
+            "source-n8n",
+            "source-dockerhub",
+            "source-pokeapi",
         ]
         for connector in poc_connectors:
             try:

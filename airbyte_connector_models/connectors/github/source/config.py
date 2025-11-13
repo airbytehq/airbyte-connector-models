@@ -16,12 +16,8 @@ class Credentials(BaseConfig):
     """
 
     option_title: Literal["OAuth Credentials"] = "OAuth Credentials"
-    access_token: Annotated[
-        str, Field(description="OAuth access token", title="Access Token")
-    ]
-    client_id: Annotated[
-        str | None, Field(description="OAuth Client Id", title="Client Id")
-    ] = None
+    access_token: Annotated[str, Field(description="OAuth access token", title="Access Token")]
+    client_id: Annotated[str | None, Field(description="OAuth Client Id", title="Client Id")] = None
     client_secret: Annotated[
         str | None, Field(description="OAuth Client secret", title="Client secret")
     ] = None
@@ -46,9 +42,7 @@ class Repository(RootModel[str]):
     model_config = ConfigDict(
         regex_engine="python-re",
     )
-    root: Annotated[
-        str, Field(pattern="^[\\w.-]+/(([\\w.-]*\\*)|[\\w.-]+(?<!\\.git))$")
-    ]
+    root: Annotated[str, Field(pattern="^[\\w.-]+/(([\\w.-]*\\*)|[\\w.-]+(?<!\\.git))$")]
 
 
 class SourceGithubConfig(BaseConfig):
@@ -58,9 +52,7 @@ class SourceGithubConfig(BaseConfig):
     )
     credentials: Annotated[
         Credentials | Credentials1,
-        Field(
-            description="Choose how to authenticate to GitHub", title="Authentication"
-        ),
+        Field(description="Choose how to authenticate to GitHub", title="Authentication"),
     ]
     repository: Annotated[
         str | None,

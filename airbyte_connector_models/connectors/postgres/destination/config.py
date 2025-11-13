@@ -26,9 +26,7 @@ class DestinationPostgresConfig(BaseConfig):
             title="Port",
         ),
     ]
-    database: Annotated[
-        str, Field(description="Name of the database.", title="DB Name")
-    ]
+    database: Annotated[str, Field(description="Name of the database.", title="DB Name")]
     schema_: Annotated[
         str,
         Field(
@@ -173,9 +171,7 @@ class SslMode4(BaseConfig):
         extra="forbid",
     )
     mode: Literal["verify-ca"]
-    ca_certificate: Annotated[
-        str, Field(description="CA certificate", title="CA certificate")
-    ]
+    ca_certificate: Annotated[str, Field(description="CA certificate", title="CA certificate")]
     client_key_password: Annotated[
         str | None,
         Field(
@@ -194,9 +190,7 @@ class SslMode5(BaseConfig):
         extra="forbid",
     )
     mode: Literal["verify-full"]
-    ca_certificate: Annotated[
-        str, Field(description="CA certificate", title="CA certificate")
-    ]
+    ca_certificate: Annotated[str, Field(description="CA certificate", title="CA certificate")]
     client_certificate: Annotated[
         str, Field(description="Client certificate", title="Client certificate")
     ]

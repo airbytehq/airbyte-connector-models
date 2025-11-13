@@ -25,9 +25,7 @@ class DestinationMysqlConfig(BaseConfig):
             title="Port",
         ),
     ]
-    database: Annotated[
-        str, Field(description="Name of the database.", title="DB Name")
-    ]
+    database: Annotated[str, Field(description="Name of the database.", title="DB Name")]
     username: Annotated[
         str, Field(description="Username to use to access the database.", title="User")
     ]

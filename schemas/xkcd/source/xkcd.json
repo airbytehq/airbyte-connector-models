@@ -1,0 +1,73 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "alt": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "day": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "img": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "link": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "month": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "news": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "num": {
+      "type": [
+        "null",
+        "integer"
+      ]
+    },
+    "safe_title": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "title": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "transcript": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "year": {
+      "type": [
+        "null",
+        "string"
+      ]
+    }
+  }
+}
