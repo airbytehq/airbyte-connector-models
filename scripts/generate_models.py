@@ -109,9 +109,7 @@ def generate_config_model(
     connector_id = "".join(p.capitalize() for p in parts[1:])
     model_name = f"{connector_type}{connector_id}Config"
 
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".json", delete=False
-    ) as temp_file:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as temp_file:
         json.dump(connection_spec, temp_file)
         temp_schema_path = temp_file.name
 
@@ -123,12 +121,18 @@ def generate_config_model(
         subprocess.run(
             [
                 "datamodel-codegen",
-                "--input", temp_schema_path,
-                "--output", str(output_path),
-                "--input-file-type", "jsonschema",
-                "--output-model-type", "pydantic_v2.BaseModel",
-                "--class-name", model_name,
-                "--base-class", "airbyte_connector_models._internal.base_config.BaseConfig",
+                "--input",
+                temp_schema_path,
+                "--output",
+                str(output_path),
+                "--input-file-type",
+                "jsonschema",
+                "--output-model-type",
+                "pydantic_v2.BaseModel",
+                "--class-name",
+                model_name,
+                "--base-class",
+                "airbyte_connector_models._internal.base_config.BaseConfig",
                 "--use-standard-collections",
                 "--use-union-operator",
                 "--field-constraints",
@@ -139,8 +143,10 @@ def generate_config_model(
                 "--use-double-quotes",
                 "--keep-model-order",
                 "--use-schema-description",
-                "--target-python-version", "3.10",
-                "--custom-file-header-path", str(header_path),
+                "--target-python-version",
+                "3.10",
+                "--custom-file-header-path",
+                str(header_path),
             ],
             check=True,
             capture_output=True,
@@ -183,20 +189,10 @@ def generate_models_for_connector(connector_name: str) -> None:
 
     generate_config_model(connector_name, spec, config_path)
 
-    if connector_type == "source":
-        records_path = connector_path / "records.py"
-        records_path.parent.mkdir(parents=True, exist_ok=True)
-        records_path.write_text(
-            f'"""Generated record models for {connector_name}."""\n\n'
-            "# Record models will be generated here\n"
-        )
-
     (base_path / connector_id / "__init__.py").write_text(
         f'"""Models for {connector_id} connector."""\n'
     )
-    (connector_path / "__init__.py").write_text(
-        f'"""Models for {connector_name}."""\n'
-    )
+    (connector_path / "__init__.py").write_text(f'"""Models for {connector_name}."""\n')
 
 
 def main() -> None:
@@ -224,6 +220,12 @@ def main() -> None:
             "source-faker",
             "source-postgres",
             "destination-duckdb",
+            "destination-postgres",
+            "source-mysql",
+            "destination-mysql",
+            "destination-dev-null",
+            "source-stripe",
+            "source-github",
         ]
         for connector in poc_connectors:
             try:

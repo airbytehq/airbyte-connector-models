@@ -4,6 +4,11 @@ on:
   repository_dispatch:
     types: [fix-command]
 
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
 jobs:
   fix:
     runs-on: ubuntu-latest
