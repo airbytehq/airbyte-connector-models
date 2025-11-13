@@ -3,6 +3,7 @@
 import argparse
 import json
 import logging
+import os
 import subprocess
 import tempfile
 from pathlib import Path
@@ -16,7 +17,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-AIRBYTE_MONOREPO_PATH = Path("/home/ubuntu/repos/airbyte")
+AIRBYTE_MONOREPO_PATH = Path(os.getenv("AIRBYTE_MONOREPO_PATH", "/home/ubuntu/repos/airbyte"))
 REPO_ROOT = Path(__file__).parent.parent
 
 

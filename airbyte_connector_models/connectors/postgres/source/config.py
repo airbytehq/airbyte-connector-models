@@ -139,7 +139,9 @@ class SourcePostgresConfig(BaseConfig):
             title="Port",
         ),
     ]
-    database: Annotated[str, Field(description="Name of the database.", title="Database Name")]
+    database: Annotated[
+        str, Field(description="Name of the database.", title="Database Name")
+    ]
     schemas: Annotated[
         list[str] | None,
         Field(
@@ -252,11 +254,15 @@ class SslMode4(BaseConfig):
         extra="allow",
     )
     mode: Literal["verify-ca"]
-    ca_certificate: Annotated[str, Field(description="CA certificate", title="CA Certificate")]
+    ca_certificate: Annotated[
+        str, Field(description="CA certificate", title="CA Certificate")
+    ]
     client_certificate: Annotated[
         str | None, Field(description="Client certificate", title="Client Certificate")
     ] = None
-    client_key: Annotated[str | None, Field(description="Client key", title="Client Key")] = None
+    client_key: Annotated[
+        str | None, Field(description="Client key", title="Client Key")
+    ] = None
     client_key_password: Annotated[
         str | None,
         Field(
@@ -275,11 +281,15 @@ class SslMode5(BaseConfig):
         extra="allow",
     )
     mode: Literal["verify-full"]
-    ca_certificate: Annotated[str, Field(description="CA certificate", title="CA Certificate")]
+    ca_certificate: Annotated[
+        str, Field(description="CA certificate", title="CA Certificate")
+    ]
     client_certificate: Annotated[
         str | None, Field(description="Client certificate", title="Client Certificate")
     ] = None
-    client_key: Annotated[str | None, Field(description="Client key", title="Client Key")] = None
+    client_key: Annotated[
+        str | None, Field(description="Client key", title="Client Key")
+    ] = None
     client_key_password: Annotated[
         str | None,
         Field(
