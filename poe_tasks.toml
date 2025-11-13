@@ -1,50 +1,41 @@
-# PoeThePoet task definitions
-# https://poethepoet.natn.io/
+# Task runner configuration for airbyte-connector-models
 
-[tool.poe.tasks]
+[tasks.test]
+help = "Run all tests"
+cmd = "pytest"
 
-# Linting and formatting
-lint = "ruff check ."
-format = "ruff format ."
-format-check = "ruff format --check ."
+[tasks.test-fast]
+help = "Run fast tests only"
+cmd = "pytest -m 'not slow'"
 
-# Testing  
-test = "pytest"
-test-fast = "pytest -x"
-test-cov = "pytest --cov=awesome_python_template --cov-report=html"
-test-unit = "pytest -m unit"
-test-integration = "pytest -m integration"
+[tasks.lint]
+help = "Run linting checks"
+cmd = "ruff check ."
 
-# Combined tasks
-check = ["format-check", "lint", "deps", "test"]
-fix = ["format", "lint --fix"]
+[tasks.format]
+help = "Format code"
+cmd = "ruff format ."
 
-# Build and install
-install = "uv sync --extra dev"
-install-prod = "uv sync"
-build = "uv build"
+[tasks.format-check]
+help = "Check code formatting"
+cmd = "ruff format --check ."
 
-# Documentation (placeholder for future)
-docs = "echo 'Documentation generation not yet configured'"
-docs-serve = "echo 'Documentation serving not yet configured'"
+[tasks.typecheck]
+help = "Run type checking"
+cmd = "basedpyright"
 
-# Development helpers
-clean = "rm -rf .pytest_cache .coverage htmlcov dist .ruff_cache"
-version = { "shell" = "echo 'awesome-python-template version:' && python -c 'import awesome_python_template; print(awesome_python_template.__version__)'" }
+[tasks.check]
+help = "Run all checks (lint, format, typecheck)"
+sequence = ["format-check", "lint", "typecheck"]
 
-[tool.poe.tasks.typecheck]
-help = "Run type checking with mypy"
-cmd = "echo 'Type checking not yet configured - consider adding mypy'"
+[tasks.fix]
+help = "Auto-fix linting and formatting issues"
+sequence = ["format", { cmd = "ruff check --fix ." }]
 
-[tool.poe.tasks.security]
-help = "Run security checks with bandit"  
-cmd = "echo 'Security scanning not yet configured - consider adding bandit'"
+[tasks.generate]
+help = "Generate connector models"
+cmd = "python scripts/generate_models.py"
 
-[tool.poe.tasks.deps]
-help = "Check for unused and missing dependencies"
-cmd = "deptry ."
-
-# Pre-commit style combined task
-[tool.poe.tasks.pre-commit]
-help = "Run all pre-commit checks"
-sequence = ["format", "lint", "test-fast"]
+[tasks.generate-connector]
+help = "Generate models for a specific connector"
+cmd = "python scripts/generate_models.py --connector ${connector}"
