@@ -319,8 +319,6 @@ def generate_record_models(
     output_dir.mkdir(parents=True, exist_ok=True)
     header_path = REPO_ROOT / ".header.txt"
 
-    module_exports: dict[str, str] = {}
-
     module_names_seen: dict[str, list[str]] = {}
 
     for stream_name, schema in schemas.items():
@@ -387,29 +385,10 @@ def generate_record_models(
 
             logger.info(f"Generated {output_file}")
 
-            module_exports[module_name] = model_name
-
         finally:
             Path(temp_schema_path).unlink(missing_ok=True)
 
-    init_file = output_dir / "__init__.py"
-    header = Path(header_path).read_text()
-
-    import_lines = []
-    for module_name in sorted(module_exports.keys()):
-        model_name = module_exports[module_name]
-        import_lines.append(f"from .{module_name} import {model_name}")
-
-    all_exports = sorted(module_exports.values())
-    all_list = "__all__ = [\n"
-    for model_name in all_exports:
-        all_list += f'    "{model_name}",\n'
-    all_list += "]\n"
-
-    init_content = header + "\n\n" + "\n".join(import_lines) + "\n\n\n" + all_list
-    init_file.write_text(init_content)
-
-    logger.info(f"Generated {init_file} with {len(module_exports)} exports")
+    logger.info(f"Generated {len(schemas)} record model files in {output_dir}")
 
 
 def generate_models_for_connector(connector_name: str) -> None:
