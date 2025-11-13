@@ -2,6 +2,11 @@
 
 Your contribution is appreciated. Here are some helpful commands you can use:
 
+## Quick Commands
+- `/generate` - Regenerate connector models from the Airbyte monorepo
+- `/autofix` - Auto-format and fix linting issues (ruff format + ruff check --fix)
+- `/lock` - Update the uv.lock file with latest dependencies
+
 ## Available Poe Tasks
 You can run any of these tasks using the slash command: `/poe <task-name>`
 
