@@ -3,15 +3,9 @@
 
 from __future__ import annotations
 
-from typing import Any
-
-from pydantic import ConfigDict, RootModel
+from pydantic import ConfigDict
 
 from airbyte_connector_models._internal.base_record import BaseRecordModel
-
-
-class Model(RootModel[Any]):
-    root: Any
 
 
 class XkcdXkcdRecord(BaseRecordModel):

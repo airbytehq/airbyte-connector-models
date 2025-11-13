@@ -10,48 +10,13 @@ from pydantic import AwareDatetime, ConfigDict, Field, RootModel
 from airbyte_connector_models._internal.base_config import BaseConfig
 
 
-class Credentials(BaseConfig):
-    """
-    Choose how to authenticate to GitHub
-    """
-
-    option_title: Literal["OAuth Credentials"] = "OAuth Credentials"
-    access_token: Annotated[str, Field(description="OAuth access token", title="Access Token")]
-    client_id: Annotated[str | None, Field(description="OAuth Client Id", title="Client Id")] = None
-    client_secret: Annotated[
-        str | None, Field(description="OAuth Client secret", title="Client secret")
-    ] = None
-
-
-class Credentials1(BaseConfig):
-    """
-    Choose how to authenticate to GitHub
-    """
-
-    option_title: Literal["PAT Credentials"] = "PAT Credentials"
-    personal_access_token: Annotated[
-        str,
-        Field(
-            description='Log into GitHub and then generate a <a href="https://github.com/settings/tokens">personal access token</a>. To load balance your API quota consumption across multiple API tokens, input multiple tokens separated with ","',
-            title="Personal Access Tokens",
-        ),
-    ]
-
-
-class Repository(RootModel[str]):
-    model_config = ConfigDict(
-        regex_engine="python-re",
-    )
-    root: Annotated[str, Field(pattern="^[\\w.-]+/(([\\w.-]*\\*)|[\\w.-]+(?<!\\.git))$")]
-
-
 class SourceGithubConfig(BaseConfig):
     model_config = ConfigDict(
         extra="allow",
         regex_engine="python-re",
     )
     credentials: Annotated[
-        Credentials | Credentials1,
+        SourceGithubConfigCredentials | SourceGithubConfigCredentials1,
         Field(description="Choose how to authenticate to GitHub", title="Authentication"),
     ]
     repository: Annotated[
@@ -68,7 +33,7 @@ class SourceGithubConfig(BaseConfig):
         ),
     ] = None
     repositories: Annotated[
-        list[Repository],
+        list[SourceGithubConfigRepository],
         Field(
             description="List of GitHub organizations/repositories, e.g. `airbytehq/airbyte` for single repository, `airbytehq/*` for get all repositories from organization and `airbytehq/a* for matching multiple repositories by pattern.",
             examples=[
@@ -124,3 +89,38 @@ class SourceGithubConfig(BaseConfig):
             title="Max Waiting Time (in minutes)",
         ),
     ] = 10
+
+
+class SourceGithubConfigCredentials(BaseConfig):
+    """
+    Choose how to authenticate to GitHub
+    """
+
+    option_title: Literal["OAuth Credentials"] = "OAuth Credentials"
+    access_token: Annotated[str, Field(description="OAuth access token", title="Access Token")]
+    client_id: Annotated[str | None, Field(description="OAuth Client Id", title="Client Id")] = None
+    client_secret: Annotated[
+        str | None, Field(description="OAuth Client secret", title="Client secret")
+    ] = None
+
+
+class SourceGithubConfigCredentials1(BaseConfig):
+    """
+    Choose how to authenticate to GitHub
+    """
+
+    option_title: Literal["PAT Credentials"] = "PAT Credentials"
+    personal_access_token: Annotated[
+        str,
+        Field(
+            description='Log into GitHub and then generate a <a href="https://github.com/settings/tokens">personal access token</a>. To load balance your API quota consumption across multiple API tokens, input multiple tokens separated with ","',
+            title="Personal Access Tokens",
+        ),
+    ]
+
+
+class SourceGithubConfigRepository(RootModel[str]):
+    model_config = ConfigDict(
+        regex_engine="python-re",
+    )
+    root: Annotated[str, Field(pattern="^[\\w.-]+/(([\\w.-]*\\*)|[\\w.-]+(?<!\\.git))$")]

@@ -3,9 +3,9 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Any
+from typing import Annotated
 
-from pydantic import Field, RootModel
+from pydantic import Field
 
 from airbyte_connector_models._internal.base_record import BaseRecordModel
 
@@ -75,7 +75,3 @@ class DockerhubDockerHubRecord(BaseRecordModel):
         str | None,
         Field(description="The user associated with the repository on Docker Hub."),
     ] = None
-
-
-class Model(RootModel[Any]):
-    root: Any

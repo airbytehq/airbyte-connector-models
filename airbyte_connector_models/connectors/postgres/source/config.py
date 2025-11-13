@@ -11,122 +11,6 @@ from pydantic import ConfigDict, Field
 from airbyte_connector_models._internal.base_config import BaseConfig
 
 
-class InvalidCdcCursorPositionBehavior(Enum):
-    """
-    Determines whether Airbyte should fail or re-sync data in case of an stale/invalid cursor value into the WAL. If 'Fail sync' is chosen, a user will have to manually reset the connection before being able to continue syncing data. If 'Re-sync data' is chosen, Airbyte will automatically trigger a refresh but could lead to higher cloud costs and data loss.
-    """
-
-    Fail_sync = "Fail sync"
-    Re_sync_data = "Re-sync data"
-
-
-class LsnCommitBehaviour(Enum):
-    """
-    Determines when Airbyte should flush the LSN of processed WAL logs in the source database. `After loading Data in the destination` is default. If `While reading Data` is selected, in case of a downstream failure (while loading data into the destination), next sync would result in a full sync.
-    """
-
-    While_reading_Data = "While reading Data"
-    After_loading_Data_in_the_destination = "After loading Data in the destination"
-
-
-class Plugin(Enum):
-    """
-    A logical decoding plugin installed on the PostgreSQL server.
-    """
-
-    pgoutput = "pgoutput"
-
-
-class ReplicationMethod(BaseConfig):
-    """
-    <i>Recommended</i> - Incrementally reads new inserts, updates, and deletes using the Postgres <a href="https://docs.airbyte.com/integrations/sources/postgres/#cdc">write-ahead log (WAL)</a>. This needs to be configured on the source database itself. Recommended for tables of any size.
-    """
-
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    method: Literal["CDC"]
-    plugin: Annotated[
-        Plugin | None,
-        Field(
-            description="A logical decoding plugin installed on the PostgreSQL server.",
-            title="Plugin",
-        ),
-    ] = "pgoutput"
-    replication_slot: Annotated[
-        str,
-        Field(
-            description='A plugin logical replication slot. Read about <a href="https://docs.airbyte.com/integrations/sources/postgres#step-3-create-replication-slot">replication slots</a>.',
-            title="Replication Slot",
-        ),
-    ]
-    publication: Annotated[
-        str,
-        Field(
-            description='A Postgres publication used for consuming changes. Read about <a href="https://docs.airbyte.com/integrations/sources/postgres#step-4-create-publications-and-replication-identities-for-tables">publications and replication identities</a>.',
-            title="Publication",
-        ),
-    ]
-    initial_waiting_seconds: Annotated[
-        int | None,
-        Field(
-            description='The amount of time the connector will wait when it launches to determine if there is new data to sync or not. Defaults to 1200 seconds. Valid range: 120 seconds to 2400 seconds. Read about <a href="https://docs.airbyte.com/integrations/sources/postgres/postgres-troubleshooting#advanced-setting-up-initial-cdc-waiting-time">initial waiting time</a>.',
-            title="Initial Waiting Time in Seconds (Advanced)",
-        ),
-    ] = 1200
-    queue_size: Annotated[
-        int | None,
-        Field(
-            description="The size of the internal queue. This may interfere with memory consumption and efficiency of the connector, please be careful.",
-            title="Size of the queue (Advanced)",
-        ),
-    ] = 10000
-    lsn_commit_behaviour: Annotated[
-        LsnCommitBehaviour | None,
-        Field(
-            description="Determines when Airbyte should flush the LSN of processed WAL logs in the source database. `After loading Data in the destination` is default. If `While reading Data` is selected, in case of a downstream failure (while loading data into the destination), next sync would result in a full sync.",
-            title="LSN commit behaviour",
-        ),
-    ] = "After loading Data in the destination"
-    heartbeat_action_query: Annotated[
-        str | None,
-        Field(
-            description='Specifies a query that the connector executes on the source database when the connector sends a heartbeat message. Please see the <a href="https://docs.airbyte.com/integrations/sources/postgres/postgres-troubleshooting#advanced-wal-disk-consumption-and-heartbeat-action-query">setup guide</a> for how and when to configure this setting.',
-            title="Debezium heartbeat query (Advanced)",
-        ),
-    ] = ""
-    invalid_cdc_cursor_position_behavior: Annotated[
-        InvalidCdcCursorPositionBehavior | None,
-        Field(
-            description="Determines whether Airbyte should fail or re-sync data in case of an stale/invalid cursor value into the WAL. If 'Fail sync' is chosen, a user will have to manually reset the connection before being able to continue syncing data. If 'Re-sync data' is chosen, Airbyte will automatically trigger a refresh but could lead to higher cloud costs and data loss.",
-            title="Invalid CDC position behavior (Advanced)",
-        ),
-    ] = "Fail sync"
-    initial_load_timeout_hours: Annotated[
-        int | None,
-        Field(
-            description="The amount of time an initial load is allowed to continue for before catching up on CDC logs.",
-            title="Initial Load Timeout in Hours (Advanced)",
-        ),
-    ] = 8
-
-
-class ReplicationMethod1(BaseConfig):
-    """
-    <i>Recommended</i> - Incrementally reads new inserts and updates via Postgres <a href="https://docs.airbyte.com/integrations/sources/postgres/#xmin">Xmin system column</a>. Suitable for databases that have low transaction pressure.
-    """
-
-    method: Literal["Xmin"]
-
-
-class ReplicationMethod2(BaseConfig):
-    """
-    Incrementally detects new inserts and updates using the <a href="https://docs.airbyte.com/understanding-airbyte/connections/incremental-append/#user-defined-cursor">cursor column</a> chosen when configuring a connection (e.g. created_at, updated_at).
-    """
-
-    method: Literal["Standard"]
-
-
 class SourcePostgresConfig(BaseConfig):
     host: Annotated[str, Field(description="Hostname of the database.", title="Host")]
     port: Annotated[
@@ -163,14 +47,23 @@ class SourcePostgresConfig(BaseConfig):
         ),
     ] = None
     ssl_mode: Annotated[
-        SslMode | SslMode1 | SslMode2 | SslMode3 | SslMode4 | SslMode5 | None,
+        SourcePostgresConfigSslMode
+        | SourcePostgresConfigSslMode1
+        | SourcePostgresConfigSslMode2
+        | SourcePostgresConfigSslMode3
+        | SourcePostgresConfigSslMode4
+        | SourcePostgresConfigSslMode5
+        | None,
         Field(
             description='SSL connection modes. \n  Read more <a href="https://jdbc.postgresql.org/documentation/head/ssl-client.html"> in the docs</a>.',
             title="SSL Modes",
         ),
     ] = None
     replication_method: Annotated[
-        ReplicationMethod | ReplicationMethod1 | ReplicationMethod2 | None,
+        SourcePostgresConfigReplicationMethod
+        | SourcePostgresConfigReplicationMethod1
+        | SourcePostgresConfigReplicationMethod2
+        | None,
         Field(
             description="Configures how data is extracted from the database.",
             title="Update Method",
@@ -199,7 +92,123 @@ class SourcePostgresConfig(BaseConfig):
     ] = None
 
 
-class SslMode(BaseConfig):
+class SourcePostgresConfigReplicationMethod(BaseConfig):
+    """
+    <i>Recommended</i> - Incrementally reads new inserts, updates, and deletes using the Postgres <a href="https://docs.airbyte.com/integrations/sources/postgres/#cdc">write-ahead log (WAL)</a>. This needs to be configured on the source database itself. Recommended for tables of any size.
+    """
+
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    method: Literal["CDC"]
+    plugin: Annotated[
+        SourcePostgresConfigReplicationMethodPlugin | None,
+        Field(
+            description="A logical decoding plugin installed on the PostgreSQL server.",
+            title="Plugin",
+        ),
+    ] = "pgoutput"
+    replication_slot: Annotated[
+        str,
+        Field(
+            description='A plugin logical replication slot. Read about <a href="https://docs.airbyte.com/integrations/sources/postgres#step-3-create-replication-slot">replication slots</a>.',
+            title="Replication Slot",
+        ),
+    ]
+    publication: Annotated[
+        str,
+        Field(
+            description='A Postgres publication used for consuming changes. Read about <a href="https://docs.airbyte.com/integrations/sources/postgres#step-4-create-publications-and-replication-identities-for-tables">publications and replication identities</a>.',
+            title="Publication",
+        ),
+    ]
+    initial_waiting_seconds: Annotated[
+        int | None,
+        Field(
+            description='The amount of time the connector will wait when it launches to determine if there is new data to sync or not. Defaults to 1200 seconds. Valid range: 120 seconds to 2400 seconds. Read about <a href="https://docs.airbyte.com/integrations/sources/postgres/postgres-troubleshooting#advanced-setting-up-initial-cdc-waiting-time">initial waiting time</a>.',
+            title="Initial Waiting Time in Seconds (Advanced)",
+        ),
+    ] = 1200
+    queue_size: Annotated[
+        int | None,
+        Field(
+            description="The size of the internal queue. This may interfere with memory consumption and efficiency of the connector, please be careful.",
+            title="Size of the queue (Advanced)",
+        ),
+    ] = 10000
+    lsn_commit_behaviour: Annotated[
+        SourcePostgresConfigReplicationMethodLsnCommitBehaviour | None,
+        Field(
+            description="Determines when Airbyte should flush the LSN of processed WAL logs in the source database. `After loading Data in the destination` is default. If `While reading Data` is selected, in case of a downstream failure (while loading data into the destination), next sync would result in a full sync.",
+            title="LSN commit behaviour",
+        ),
+    ] = "After loading Data in the destination"
+    heartbeat_action_query: Annotated[
+        str | None,
+        Field(
+            description='Specifies a query that the connector executes on the source database when the connector sends a heartbeat message. Please see the <a href="https://docs.airbyte.com/integrations/sources/postgres/postgres-troubleshooting#advanced-wal-disk-consumption-and-heartbeat-action-query">setup guide</a> for how and when to configure this setting.',
+            title="Debezium heartbeat query (Advanced)",
+        ),
+    ] = ""
+    invalid_cdc_cursor_position_behavior: Annotated[
+        SourcePostgresConfigReplicationMethodInvalidCdcCursorPositionBehavior | None,
+        Field(
+            description="Determines whether Airbyte should fail or re-sync data in case of an stale/invalid cursor value into the WAL. If 'Fail sync' is chosen, a user will have to manually reset the connection before being able to continue syncing data. If 'Re-sync data' is chosen, Airbyte will automatically trigger a refresh but could lead to higher cloud costs and data loss.",
+            title="Invalid CDC position behavior (Advanced)",
+        ),
+    ] = "Fail sync"
+    initial_load_timeout_hours: Annotated[
+        int | None,
+        Field(
+            description="The amount of time an initial load is allowed to continue for before catching up on CDC logs.",
+            title="Initial Load Timeout in Hours (Advanced)",
+        ),
+    ] = 8
+
+
+class SourcePostgresConfigReplicationMethod1(BaseConfig):
+    """
+    <i>Recommended</i> - Incrementally reads new inserts and updates via Postgres <a href="https://docs.airbyte.com/integrations/sources/postgres/#xmin">Xmin system column</a>. Suitable for databases that have low transaction pressure.
+    """
+
+    method: Literal["Xmin"]
+
+
+class SourcePostgresConfigReplicationMethod2(BaseConfig):
+    """
+    Incrementally detects new inserts and updates using the <a href="https://docs.airbyte.com/understanding-airbyte/connections/incremental-append/#user-defined-cursor">cursor column</a> chosen when configuring a connection (e.g. created_at, updated_at).
+    """
+
+    method: Literal["Standard"]
+
+
+class SourcePostgresConfigReplicationMethodInvalidCdcCursorPositionBehavior(Enum):
+    """
+    Determines whether Airbyte should fail or re-sync data in case of an stale/invalid cursor value into the WAL. If 'Fail sync' is chosen, a user will have to manually reset the connection before being able to continue syncing data. If 'Re-sync data' is chosen, Airbyte will automatically trigger a refresh but could lead to higher cloud costs and data loss.
+    """
+
+    Fail_sync = "Fail sync"
+    Re_sync_data = "Re-sync data"
+
+
+class SourcePostgresConfigReplicationMethodLsnCommitBehaviour(Enum):
+    """
+    Determines when Airbyte should flush the LSN of processed WAL logs in the source database. `After loading Data in the destination` is default. If `While reading Data` is selected, in case of a downstream failure (while loading data into the destination), next sync would result in a full sync.
+    """
+
+    While_reading_Data = "While reading Data"
+    After_loading_Data_in_the_destination = "After loading Data in the destination"
+
+
+class SourcePostgresConfigReplicationMethodPlugin(Enum):
+    """
+    A logical decoding plugin installed on the PostgreSQL server.
+    """
+
+    pgoutput = "pgoutput"
+
+
+class SourcePostgresConfigSslMode(BaseConfig):
     """
     Disables encryption of communication between Airbyte and source database.
     """
@@ -210,7 +219,7 @@ class SslMode(BaseConfig):
     mode: Literal["disable"]
 
 
-class SslMode1(BaseConfig):
+class SourcePostgresConfigSslMode1(BaseConfig):
     """
     Enables encryption only when required by the source database.
     """
@@ -221,7 +230,7 @@ class SslMode1(BaseConfig):
     mode: Literal["allow"]
 
 
-class SslMode2(BaseConfig):
+class SourcePostgresConfigSslMode2(BaseConfig):
     """
     Allows unencrypted connection only if the source database does not support encryption.
     """
@@ -232,7 +241,7 @@ class SslMode2(BaseConfig):
     mode: Literal["prefer"]
 
 
-class SslMode3(BaseConfig):
+class SourcePostgresConfigSslMode3(BaseConfig):
     """
     Always require encryption. If the source database server does not support encryption, connection will fail.
     """
@@ -243,7 +252,7 @@ class SslMode3(BaseConfig):
     mode: Literal["require"]
 
 
-class SslMode4(BaseConfig):
+class SourcePostgresConfigSslMode4(BaseConfig):
     """
     Always require encryption and verifies that the source database server has a valid SSL certificate.
     """
@@ -266,7 +275,7 @@ class SslMode4(BaseConfig):
     ] = None
 
 
-class SslMode5(BaseConfig):
+class SourcePostgresConfigSslMode5(BaseConfig):
     """
     This is the most secure mode. Always require encryption and verifies the identity of the source database server.
     """

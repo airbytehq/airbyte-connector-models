@@ -51,7 +51,13 @@ class DestinationPostgresConfig(BaseConfig):
         ),
     ] = False
     ssl_mode: Annotated[
-        SslMode | SslMode1 | SslMode2 | SslMode3 | SslMode4 | SslMode5 | None,
+        DestinationPostgresConfigSslMode
+        | DestinationPostgresConfigSslMode1
+        | DestinationPostgresConfigSslMode2
+        | DestinationPostgresConfigSslMode3
+        | DestinationPostgresConfigSslMode4
+        | DestinationPostgresConfigSslMode5
+        | None,
         Field(
             description='SSL connection modes. \n <b>disable</b> - Chose this mode to disable encryption of communication between Airbyte and destination database\n <b>allow</b> - Chose this mode to enable encryption only when required by the source database\n <b>prefer</b> - Chose this mode to allow unencrypted connection only if the source database does not support encryption\n <b>require</b> - Chose this mode to always require encryption. If the source database server does not support encryption, connection will fail\n  <b>verify-ca</b> - Chose this mode to always require encryption and to verify that the source database server has a valid SSL certificate\n  <b>verify-full</b> - This is the most secure mode. Chose this mode to always require encryption and to verify the identity of the source database server\n See more information - <a href="https://jdbc.postgresql.org/documentation/head/ssl-client.html"> in the docs</a>.',
             title="SSL modes",
@@ -94,31 +100,7 @@ class DestinationPostgresConfig(BaseConfig):
     ] = False
 
 
-class Mode(Enum):
-    disable = "disable"
-
-
-class Mode1(Enum):
-    allow = "allow"
-
-
-class Mode2(Enum):
-    prefer = "prefer"
-
-
-class Mode3(Enum):
-    require = "require"
-
-
-class Mode4(Enum):
-    verify_ca = "verify-ca"
-
-
-class Mode5(Enum):
-    verify_full = "verify-full"
-
-
-class SslMode(BaseConfig):
+class DestinationPostgresConfigSslMode(BaseConfig):
     """
     Disable SSL.
     """
@@ -129,7 +111,7 @@ class SslMode(BaseConfig):
     mode: Literal["disable"]
 
 
-class SslMode1(BaseConfig):
+class DestinationPostgresConfigSslMode1(BaseConfig):
     """
     Allow SSL mode.
     """
@@ -140,7 +122,11 @@ class SslMode1(BaseConfig):
     mode: Literal["allow"]
 
 
-class SslMode2(BaseConfig):
+class DestinationPostgresConfigSslMode1Mode(Enum):
+    allow = "allow"
+
+
+class DestinationPostgresConfigSslMode2(BaseConfig):
     """
     Prefer SSL mode.
     """
@@ -151,7 +137,11 @@ class SslMode2(BaseConfig):
     mode: Literal["prefer"]
 
 
-class SslMode3(BaseConfig):
+class DestinationPostgresConfigSslMode2Mode(Enum):
+    prefer = "prefer"
+
+
+class DestinationPostgresConfigSslMode3(BaseConfig):
     """
     Require SSL mode.
     """
@@ -162,7 +152,11 @@ class SslMode3(BaseConfig):
     mode: Literal["require"]
 
 
-class SslMode4(BaseConfig):
+class DestinationPostgresConfigSslMode3Mode(Enum):
+    require = "require"
+
+
+class DestinationPostgresConfigSslMode4(BaseConfig):
     """
     Verify-ca SSL mode.
     """
@@ -181,7 +175,11 @@ class SslMode4(BaseConfig):
     ] = None
 
 
-class SslMode5(BaseConfig):
+class DestinationPostgresConfigSslMode4Mode(Enum):
+    verify_ca = "verify-ca"
+
+
+class DestinationPostgresConfigSslMode5(BaseConfig):
     """
     Verify-full SSL mode.
     """
@@ -202,3 +200,11 @@ class SslMode5(BaseConfig):
             title="Client key password",
         ),
     ] = None
+
+
+class DestinationPostgresConfigSslMode5Mode(Enum):
+    verify_full = "verify-full"
+
+
+class DestinationPostgresConfigSslModeMode(Enum):
+    disable = "disable"

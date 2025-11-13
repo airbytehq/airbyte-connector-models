@@ -145,6 +145,7 @@ def generate_config_model(
                 "--use-double-quotes",
                 "--keep-model-order",
                 "--use-schema-description",
+                "--parent-scoped-naming",
                 "--target-python-version",
                 "3.10",
                 "--custom-file-header-path",
@@ -272,6 +273,9 @@ def generate_record_models(
 ) -> None:
     """Generate Pydantic record models from schemas.
 
+    Generates each stream separately and combines them into a single records.py file.
+    This approach allows --parent-scoped-naming to work properly without "Model" prefixes.
+
     Args:
         connector_name: The connector name (e.g., "source-xkcd")
         connector_id: The connector ID (e.g., "xkcd")
@@ -284,63 +288,103 @@ def generate_record_models(
         logger.warning(f"No schemas found for {connector_name}")
         return
 
-    combined_schema = {
-        "$schema": "http://json-schema.org/draft-07/schema#",
-        "definitions": {},
-    }
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    header_path = REPO_ROOT / ".header.txt"
+
+    all_generated_code = []
+    imports_seen = set()
 
     for stream_name, schema in schemas.items():
         class_name = "".join(word.capitalize() for word in stream_name.replace("-", "_").split("_"))
         model_name = f"{connector_id.capitalize()}{class_name}Record"
 
-        combined_schema["definitions"][model_name] = schema
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as temp_file:
+            json.dump(schema, temp_file)
+            temp_schema_path = temp_file.name
 
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as temp_file:
-        json.dump(combined_schema, temp_file)
-        temp_schema_path = temp_file.name
+        try:
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as temp_output:
+                temp_output_path = temp_output.name
 
-    try:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
+            subprocess.run(
+                [
+                    "datamodel-codegen",
+                    "--input",
+                    temp_schema_path,
+                    "--output",
+                    temp_output_path,
+                    "--input-file-type",
+                    "jsonschema",
+                    "--output-model-type",
+                    "pydantic_v2.BaseModel",
+                    "--class-name",
+                    model_name,
+                    "--base-class",
+                    "airbyte_connector_models._internal.base_record.BaseRecordModel",
+                    "--use-standard-collections",
+                    "--use-union-operator",
+                    "--field-constraints",
+                    "--use-annotated",
+                    "--keyword-only",
+                    "--disable-timestamp",
+                    "--use-exact-imports",
+                    "--use-double-quotes",
+                    "--keep-model-order",
+                    "--use-schema-description",
+                    "--parent-scoped-naming",
+                    "--target-python-version",
+                    "3.10",
+                    "--custom-file-header-path",
+                    str(header_path),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
 
-        header_path = REPO_ROOT / ".header.txt"
+            with Path(temp_output_path).open() as f:
+                generated_code = f.read()
 
-        subprocess.run(
-            [
-                "datamodel-codegen",
-                "--input",
-                temp_schema_path,
-                "--output",
-                str(output_path),
-                "--input-file-type",
-                "jsonschema",
-                "--output-model-type",
-                "pydantic_v2.BaseModel",
-                "--base-class",
-                "airbyte_connector_models._internal.base_record.BaseRecordModel",
-                "--use-standard-collections",
-                "--use-union-operator",
-                "--field-constraints",
-                "--use-annotated",
-                "--keyword-only",
-                "--disable-timestamp",
-                "--use-exact-imports",
-                "--use-double-quotes",
-                "--keep-model-order",
-                "--use-schema-description",
-                "--target-python-version",
-                "3.10",
-                "--custom-file-header-path",
-                str(header_path),
-            ],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
+            lines = generated_code.split("\n")
+            code_lines = []
+            in_header = True
 
-        logger.info(f"Generated record models at {output_path}")
+            for line in lines:
+                if in_header:
+                    if line.startswith("#") or line.strip() == "":
+                        continue
+                    in_header = False
 
-    finally:
-        Path(temp_schema_path).unlink(missing_ok=True)
+                if line.startswith(("from ", "import ")):
+                    imports_seen.add(line)
+                elif line.strip() or code_lines:  # Non-empty, non-import line
+                    code_lines.append(line)
+
+            all_generated_code.append("\n".join(code_lines))
+
+            Path(temp_output_path).unlink(missing_ok=True)
+
+        finally:
+            Path(temp_schema_path).unlink(missing_ok=True)
+
+    with Path(header_path).open() as f:
+        header = f.read()
+
+    sorted_imports = sorted(imports_seen)
+
+    final_code = (
+        header
+        + "\n\n"
+        + "\n".join(sorted_imports)
+        + "\n\n\n"
+        + "\n\n\n".join(all_generated_code)
+        + "\n"
+    )
+
+    with Path(output_path).open("w") as f:
+        f.write(final_code)
+
+    logger.info(f"Generated record models at {output_path}")
 
 
 def generate_models_for_connector(connector_name: str) -> None:
