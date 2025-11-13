@@ -21,7 +21,23 @@ logger = logging.getLogger(__name__)
 
 AIRBYTE_MONOREPO_PATH = Path(os.getenv("AIRBYTE_MONOREPO_PATH", "/home/ubuntu/repos/airbyte"))
 REPO_ROOT = Path(__file__).parent.parent
-SCHEMAS_DIR = REPO_ROOT / "schemas"
+JSON_SCHEMA_DIR = REPO_ROOT / "json-schema"
+
+CONNECTORS = [
+    "source-faker",
+    "source-postgres",
+    "destination-duckdb",
+    "destination-postgres",
+    "source-mysql",
+    "destination-mysql",
+    "destination-dev-null",
+    "source-github",
+    "source-xkcd",
+    "source-n8n",
+    "source-dockerhub",
+    "source-pokeapi",
+    "source-airbyte",
+]
 
 
 def get_connector_spec(connector_name: str) -> dict[str, Any]:
@@ -271,7 +287,7 @@ def save_schema_artifact(
     stream_name: str,
     schema: dict[str, Any],
 ) -> Path:
-    """Save a JSON schema artifact.
+    """Save a JSON schema artifact for a stream.
 
     Args:
         connector_id: The connector ID (e.g., "xkcd")
@@ -282,14 +298,39 @@ def save_schema_artifact(
     Returns:
         Path to the saved schema file
     """
-    schema_dir = SCHEMAS_DIR / connector_id / connector_type
+    schema_dir = JSON_SCHEMA_DIR / connector_id / connector_type / "records"
     schema_dir.mkdir(parents=True, exist_ok=True)
 
     schema_file = schema_dir / f"{stream_name}.json"
-    with schema_file.open("w") as f:
-        json.dump(schema, f, indent=2)
+    schema_file.write_text(json.dumps(schema, indent=2))
 
     logger.info(f"Saved schema artifact: {schema_file}")
+    return schema_file
+
+
+def save_config_schema_artifact(
+    connector_id: str,
+    connector_type: str,
+    spec: dict[str, Any],
+) -> Path:
+    """Save a JSON schema artifact for connector configuration.
+
+    Args:
+        connector_id: The connector ID (e.g., "xkcd")
+        connector_type: The connector type ("source" or "destination")
+        spec: The connector spec containing connectionSpecification
+
+    Returns:
+        Path to the saved schema file
+    """
+    schema_dir = JSON_SCHEMA_DIR / connector_id / connector_type
+    schema_dir.mkdir(parents=True, exist_ok=True)
+
+    schema_file = schema_dir / "configuration.json"
+    config_schema = spec.get("connectionSpecification", {})
+    schema_file.write_text(json.dumps(config_schema, indent=2))
+
+    logger.info(f"Saved config schema artifact: {schema_file}")
     return schema_file
 
 
@@ -388,6 +429,9 @@ def generate_record_models(
         finally:
             Path(temp_schema_path).unlink(missing_ok=True)
 
+    init_file = output_dir / "__init__.py"
+    init_file.write_text("")
+
     logger.info(f"Generated {len(schemas)} record model files in {output_dir}")
 
 
@@ -416,6 +460,7 @@ def generate_models_for_connector(connector_name: str) -> None:
     try:
         spec = get_connector_spec(connector_name)
         generate_config_model(connector_name, spec, config_path)
+        save_config_schema_artifact(connector_id, connector_type, spec)
     except RuntimeError:
         logger.warning(f"No spec file found for {connector_name}, skipping config model generation")
 
@@ -466,24 +511,13 @@ def main() -> None:
     if args.connector:
         generate_models_for_connector(args.connector)
     elif args.all:
-        logger.error("--all flag not yet implemented")
+        for connector in CONNECTORS:
+            try:
+                generate_models_for_connector(connector)
+            except Exception:
+                logger.exception(f"Failed to generate models for {connector}")
     else:
-        poc_connectors = [
-            "source-faker",
-            "source-postgres",
-            "destination-duckdb",
-            "destination-postgres",
-            "source-mysql",
-            "destination-mysql",
-            "destination-dev-null",
-            "source-github",
-            "source-xkcd",
-            "source-n8n",
-            "source-dockerhub",
-            "source-pokeapi",
-            "source-airbyte",
-        ]
-        for connector in poc_connectors:
+        for connector in CONNECTORS:
             try:
                 generate_models_for_connector(connector)
             except Exception:
