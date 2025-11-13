@@ -428,6 +428,7 @@ def main() -> None:
             "source-n8n",
             "source-dockerhub",
             "source-pokeapi",
+            "source-airbyte",
         ]
         for connector in poc_connectors:
             try:
