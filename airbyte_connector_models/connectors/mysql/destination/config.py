@@ -10,7 +10,7 @@ from pydantic import ConfigDict, Field
 from airbyte_connector_models._internal.base_config import BaseConfig
 
 
-class DestinationMysqlConfig(BaseConfig):
+class MySQLDestinationSpec(BaseConfig):
     model_config = ConfigDict(
         extra="allow",
     )

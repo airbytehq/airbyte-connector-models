@@ -11,7 +11,7 @@ from pydantic import ConfigDict, Field
 from airbyte_connector_models._internal.base_config import BaseConfig
 
 
-class SourcePostgresConfig(BaseConfig):
+class PostgresSourceSpec(BaseConfig):
     host: Annotated[str, Field(description="Hostname of the database.", title="Host")]
     port: Annotated[
         int,
@@ -47,12 +47,12 @@ class SourcePostgresConfig(BaseConfig):
         ),
     ] = None
     ssl_mode: Annotated[
-        SourcePostgresConfigSslMode
-        | SourcePostgresConfigSslMode1
-        | SourcePostgresConfigSslMode2
-        | SourcePostgresConfigSslMode3
-        | SourcePostgresConfigSslMode4
-        | SourcePostgresConfigSslMode5
+        PostgresSourceSpecDisable
+        | PostgresSourceSpecAllow
+        | PostgresSourceSpecPrefer
+        | PostgresSourceSpecRequire
+        | PostgresSourceSpecVerifyCa
+        | PostgresSourceSpecVerifyFull
         | None,
         Field(
             description='SSL connection modes. \n  Read more <a href="https://jdbc.postgresql.org/documentation/head/ssl-client.html"> in the docs</a>.',
@@ -60,9 +60,9 @@ class SourcePostgresConfig(BaseConfig):
         ),
     ] = None
     replication_method: Annotated[
-        SourcePostgresConfigReplicationMethod
-        | SourcePostgresConfigReplicationMethod1
-        | SourcePostgresConfigReplicationMethod2
+        PostgresSourceSpecReadChangesUsingWriteAheadLogCDC
+        | PostgresSourceSpecDetectChangesWithXminSystemColumn
+        | PostgresSourceSpecScanChangesWithUserDefinedCursor
         | None,
         Field(
             description="Configures how data is extracted from the database.",
@@ -92,7 +92,48 @@ class SourcePostgresConfig(BaseConfig):
     ] = None
 
 
-class SourcePostgresConfigReplicationMethod(BaseConfig):
+class PostgresSourceSpecAllow(BaseConfig):
+    """
+    Enables encryption only when required by the source database.
+    """
+
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    mode: Literal["allow"]
+
+
+class PostgresSourceSpecDetectChangesWithXminSystemColumn(BaseConfig):
+    """
+    <i>Recommended</i> - Incrementally reads new inserts and updates via Postgres <a href="https://docs.airbyte.com/integrations/sources/postgres/#xmin">Xmin system column</a>. Suitable for databases that have low transaction pressure.
+    """
+
+    method: Literal["Xmin"]
+
+
+class PostgresSourceSpecDisable(BaseConfig):
+    """
+    Disables encryption of communication between Airbyte and source database.
+    """
+
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    mode: Literal["disable"]
+
+
+class PostgresSourceSpecPrefer(BaseConfig):
+    """
+    Allows unencrypted connection only if the source database does not support encryption.
+    """
+
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    mode: Literal["prefer"]
+
+
+class PostgresSourceSpecReadChangesUsingWriteAheadLogCDC(BaseConfig):
     """
     <i>Recommended</i> - Incrementally reads new inserts, updates, and deletes using the Postgres <a href="https://docs.airbyte.com/integrations/sources/postgres/#cdc">write-ahead log (WAL)</a>. This needs to be configured on the source database itself. Recommended for tables of any size.
     """
@@ -102,7 +143,7 @@ class SourcePostgresConfigReplicationMethod(BaseConfig):
     )
     method: Literal["CDC"]
     plugin: Annotated[
-        SourcePostgresConfigReplicationMethodPlugin | None,
+        PostgresSourceSpecReadChangesUsingWriteAheadLogCDCPlugin | None,
         Field(
             description="A logical decoding plugin installed on the PostgreSQL server.",
             title="Plugin",
@@ -137,7 +178,7 @@ class SourcePostgresConfigReplicationMethod(BaseConfig):
         ),
     ] = 10000
     lsn_commit_behaviour: Annotated[
-        SourcePostgresConfigReplicationMethodLsnCommitBehaviour | None,
+        PostgresSourceSpecReadChangesUsingWriteAheadLogCDCLSNCommitBehaviour | None,
         Field(
             description="Determines when Airbyte should flush the LSN of processed WAL logs in the source database. `After loading Data in the destination` is default. If `While reading Data` is selected, in case of a downstream failure (while loading data into the destination), next sync would result in a full sync.",
             title="LSN commit behaviour",
@@ -151,7 +192,7 @@ class SourcePostgresConfigReplicationMethod(BaseConfig):
         ),
     ] = ""
     invalid_cdc_cursor_position_behavior: Annotated[
-        SourcePostgresConfigReplicationMethodInvalidCdcCursorPositionBehavior | None,
+        PostgresSourceSpecReadChangesUsingWriteAheadLogCDCInvalidCDCPositionBehaviorAdvanced | None,
         Field(
             description="Determines whether Airbyte should fail or re-sync data in case of an stale/invalid cursor value into the WAL. If 'Fail sync' is chosen, a user will have to manually reset the connection before being able to continue syncing data. If 'Re-sync data' is chosen, Airbyte will automatically trigger a refresh but could lead to higher cloud costs and data loss.",
             title="Invalid CDC position behavior (Advanced)",
@@ -166,23 +207,7 @@ class SourcePostgresConfigReplicationMethod(BaseConfig):
     ] = 8
 
 
-class SourcePostgresConfigReplicationMethod1(BaseConfig):
-    """
-    <i>Recommended</i> - Incrementally reads new inserts and updates via Postgres <a href="https://docs.airbyte.com/integrations/sources/postgres/#xmin">Xmin system column</a>. Suitable for databases that have low transaction pressure.
-    """
-
-    method: Literal["Xmin"]
-
-
-class SourcePostgresConfigReplicationMethod2(BaseConfig):
-    """
-    Incrementally detects new inserts and updates using the <a href="https://docs.airbyte.com/understanding-airbyte/connections/incremental-append/#user-defined-cursor">cursor column</a> chosen when configuring a connection (e.g. created_at, updated_at).
-    """
-
-    method: Literal["Standard"]
-
-
-class SourcePostgresConfigReplicationMethodInvalidCdcCursorPositionBehavior(Enum):
+class PostgresSourceSpecReadChangesUsingWriteAheadLogCDCInvalidCDCPositionBehaviorAdvanced(Enum):
     """
     Determines whether Airbyte should fail or re-sync data in case of an stale/invalid cursor value into the WAL. If 'Fail sync' is chosen, a user will have to manually reset the connection before being able to continue syncing data. If 'Re-sync data' is chosen, Airbyte will automatically trigger a refresh but could lead to higher cloud costs and data loss.
     """
@@ -191,7 +216,7 @@ class SourcePostgresConfigReplicationMethodInvalidCdcCursorPositionBehavior(Enum
     Re_sync_data = "Re-sync data"
 
 
-class SourcePostgresConfigReplicationMethodLsnCommitBehaviour(Enum):
+class PostgresSourceSpecReadChangesUsingWriteAheadLogCDCLSNCommitBehaviour(Enum):
     """
     Determines when Airbyte should flush the LSN of processed WAL logs in the source database. `After loading Data in the destination` is default. If `While reading Data` is selected, in case of a downstream failure (while loading data into the destination), next sync would result in a full sync.
     """
@@ -200,7 +225,7 @@ class SourcePostgresConfigReplicationMethodLsnCommitBehaviour(Enum):
     After_loading_Data_in_the_destination = "After loading Data in the destination"
 
 
-class SourcePostgresConfigReplicationMethodPlugin(Enum):
+class PostgresSourceSpecReadChangesUsingWriteAheadLogCDCPlugin(Enum):
     """
     A logical decoding plugin installed on the PostgreSQL server.
     """
@@ -208,40 +233,7 @@ class SourcePostgresConfigReplicationMethodPlugin(Enum):
     pgoutput = "pgoutput"
 
 
-class SourcePostgresConfigSslMode(BaseConfig):
-    """
-    Disables encryption of communication between Airbyte and source database.
-    """
-
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    mode: Literal["disable"]
-
-
-class SourcePostgresConfigSslMode1(BaseConfig):
-    """
-    Enables encryption only when required by the source database.
-    """
-
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    mode: Literal["allow"]
-
-
-class SourcePostgresConfigSslMode2(BaseConfig):
-    """
-    Allows unencrypted connection only if the source database does not support encryption.
-    """
-
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    mode: Literal["prefer"]
-
-
-class SourcePostgresConfigSslMode3(BaseConfig):
+class PostgresSourceSpecRequire(BaseConfig):
     """
     Always require encryption. If the source database server does not support encryption, connection will fail.
     """
@@ -252,7 +244,15 @@ class SourcePostgresConfigSslMode3(BaseConfig):
     mode: Literal["require"]
 
 
-class SourcePostgresConfigSslMode4(BaseConfig):
+class PostgresSourceSpecScanChangesWithUserDefinedCursor(BaseConfig):
+    """
+    Incrementally detects new inserts and updates using the <a href="https://docs.airbyte.com/understanding-airbyte/connections/incremental-append/#user-defined-cursor">cursor column</a> chosen when configuring a connection (e.g. created_at, updated_at).
+    """
+
+    method: Literal["Standard"]
+
+
+class PostgresSourceSpecVerifyCa(BaseConfig):
     """
     Always require encryption and verifies that the source database server has a valid SSL certificate.
     """
@@ -275,7 +275,7 @@ class SourcePostgresConfigSslMode4(BaseConfig):
     ] = None
 
 
-class SourcePostgresConfigSslMode5(BaseConfig):
+class PostgresSourceSpecVerifyFull(BaseConfig):
     """
     This is the most secure mode. Always require encryption and verifies the identity of the source database server.
     """

@@ -10,7 +10,7 @@ from pydantic import ConfigDict, Field
 from airbyte_connector_models._internal.base_config import BaseConfig
 
 
-class DestinationDuckdbConfig(BaseConfig):
+class DestinationDuckdb(BaseConfig):
     model_config = ConfigDict(
         extra="allow",
     )

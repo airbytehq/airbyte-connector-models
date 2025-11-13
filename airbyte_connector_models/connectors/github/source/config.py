@@ -10,13 +10,13 @@ from pydantic import AwareDatetime, ConfigDict, Field, RootModel
 from airbyte_connector_models._internal.base_config import BaseConfig
 
 
-class SourceGithubConfig(BaseConfig):
+class GitHubSourceSpec(BaseConfig):
     model_config = ConfigDict(
         extra="allow",
         regex_engine="python-re",
     )
     credentials: Annotated[
-        SourceGithubConfigCredentials | SourceGithubConfigCredentials1,
+        GitHubSourceSpecOAuth | GitHubSourceSpecPersonalAccessToken,
         Field(description="Choose how to authenticate to GitHub", title="Authentication"),
     ]
     repository: Annotated[
@@ -33,7 +33,7 @@ class SourceGithubConfig(BaseConfig):
         ),
     ] = None
     repositories: Annotated[
-        list[SourceGithubConfigRepository],
+        list[GitHubSourceSpecGitHubRepository],
         Field(
             description="List of GitHub organizations/repositories, e.g. `airbytehq/airbyte` for single repository, `airbytehq/*` for get all repositories from organization and `airbytehq/a* for matching multiple repositories by pattern.",
             examples=[
@@ -91,7 +91,14 @@ class SourceGithubConfig(BaseConfig):
     ] = 10
 
 
-class SourceGithubConfigCredentials(BaseConfig):
+class GitHubSourceSpecGitHubRepository(RootModel[str]):
+    model_config = ConfigDict(
+        regex_engine="python-re",
+    )
+    root: Annotated[str, Field(pattern="^[\\w.-]+/(([\\w.-]*\\*)|[\\w.-]+(?<!\\.git))$")]
+
+
+class GitHubSourceSpecOAuth(BaseConfig):
     """
     Choose how to authenticate to GitHub
     """
@@ -104,7 +111,7 @@ class SourceGithubConfigCredentials(BaseConfig):
     ] = None
 
 
-class SourceGithubConfigCredentials1(BaseConfig):
+class GitHubSourceSpecPersonalAccessToken(BaseConfig):
     """
     Choose how to authenticate to GitHub
     """
@@ -117,10 +124,3 @@ class SourceGithubConfigCredentials1(BaseConfig):
             title="Personal Access Tokens",
         ),
     ]
-
-
-class SourceGithubConfigRepository(RootModel[str]):
-    model_config = ConfigDict(
-        regex_engine="python-re",
-    )
-    root: Annotated[str, Field(pattern="^[\\w.-]+/(([\\w.-]*\\*)|[\\w.-]+(?<!\\.git))$")]
