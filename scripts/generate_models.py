@@ -2,8 +2,10 @@
 
 import argparse
 import json
+import keyword
 import logging
 import os
+import re
 import subprocess
 import tempfile
 from pathlib import Path
@@ -237,6 +239,32 @@ def extract_inline_schemas(manifest: dict[str, Any]) -> dict[str, dict[str, Any]
     return schemas
 
 
+def normalize_stream_name_to_module(stream_name: str) -> str:
+    """Normalize a stream name to a valid Python module name.
+
+    Args:
+        stream_name: The stream name (e.g., "Jobs", "docker-hub", "Checkout Sessions")
+
+    Returns:
+        A valid Python module name (e.g., "jobs", "docker_hub", "checkout_sessions")
+    """
+    normalized = stream_name.lower()
+
+    normalized = re.sub(r"[\s-]+", "_", normalized)
+
+    normalized = re.sub(r"[^a-z0-9_]", "", normalized)
+
+    normalized = normalized.strip("_")
+
+    if normalized and (normalized[0].isdigit() or keyword.iskeyword(normalized)):
+        normalized = f"stream_{normalized}"
+
+    if not normalized:
+        normalized = "stream"
+
+    return normalized
+
+
 def save_schema_artifact(
     connector_id: str,
     connector_type: str,
@@ -269,18 +297,18 @@ def generate_record_models(
     connector_name: str,
     connector_id: str,
     schemas: dict[str, dict[str, Any]],
-    output_path: Path,
+    output_dir: Path,
 ) -> None:
     """Generate Pydantic record models from schemas.
 
-    Generates each stream separately and combines them into a single records.py file.
-    This approach allows --parent-scoped-naming to work properly without "Model" prefixes.
+    Generates each stream into a separate file in the records/ directory.
+    Creates records/__init__.py with re-exports for backward compatibility.
 
     Args:
         connector_name: The connector name (e.g., "source-xkcd")
         connector_id: The connector ID (e.g., "xkcd")
         schemas: Dictionary mapping stream names to their schemas
-        output_path: Path to write the generated models
+        output_dir: Path to the records/ directory
     """
     logger.info(f"Generating record models for {connector_name}")
 
@@ -288,23 +316,38 @@ def generate_record_models(
         logger.warning(f"No schemas found for {connector_name}")
         return
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
     header_path = REPO_ROOT / ".header.txt"
 
-    all_generated_code = []
-    imports_seen = set()
+    module_exports: dict[str, str] = {}
+
+    module_names_seen: dict[str, list[str]] = {}
 
     for stream_name, schema in schemas.items():
+        module_name = normalize_stream_name_to_module(stream_name)
+
+        if module_name not in module_names_seen:
+            module_names_seen[module_name] = []
+        module_names_seen[module_name].append(stream_name)
+
+        if len(module_names_seen[module_name]) > 1:
+            suffix_num = len(module_names_seen[module_name]) - 1
+            module_name = f"{module_name}_{suffix_num}"
+            logger.warning(
+                f"Module name collision for streams {module_names_seen[module_name]}, "
+                f"using {module_name} for {stream_name}"
+            )
+
         class_name = "".join(word.capitalize() for word in stream_name.replace("-", "_").split("_"))
         model_name = f"{connector_id.capitalize()}{class_name}Record"
 
+        # Create temp schema file
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as temp_file:
             json.dump(schema, temp_file)
             temp_schema_path = temp_file.name
 
         try:
-            with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as temp_output:
-                temp_output_path = temp_output.name
+            output_file = output_dir / f"{module_name}.py"
 
             subprocess.run(
                 [
@@ -312,7 +355,7 @@ def generate_record_models(
                     "--input",
                     temp_schema_path,
                     "--output",
-                    temp_output_path,
+                    str(output_file),
                     "--input-file-type",
                     "jsonschema",
                     "--output-model-type",
@@ -342,49 +385,31 @@ def generate_record_models(
                 text=True,
             )
 
-            with Path(temp_output_path).open() as f:
-                generated_code = f.read()
+            logger.info(f"Generated {output_file}")
 
-            lines = generated_code.split("\n")
-            code_lines = []
-            in_header = True
-
-            for line in lines:
-                if in_header:
-                    if line.startswith("#") or line.strip() == "":
-                        continue
-                    in_header = False
-
-                if line.startswith(("from ", "import ")):
-                    imports_seen.add(line)
-                elif line.strip() or code_lines:  # Non-empty, non-import line
-                    code_lines.append(line)
-
-            all_generated_code.append("\n".join(code_lines))
-
-            Path(temp_output_path).unlink(missing_ok=True)
+            module_exports[module_name] = model_name
 
         finally:
             Path(temp_schema_path).unlink(missing_ok=True)
 
-    with Path(header_path).open() as f:
-        header = f.read()
+    init_file = output_dir / "__init__.py"
+    header = Path(header_path).read_text()
 
-    sorted_imports = sorted(imports_seen)
+    import_lines = []
+    for module_name in sorted(module_exports.keys()):
+        model_name = module_exports[module_name]
+        import_lines.append(f"from .{module_name} import {model_name}")
 
-    final_code = (
-        header
-        + "\n\n"
-        + "\n".join(sorted_imports)
-        + "\n\n\n"
-        + "\n\n\n".join(all_generated_code)
-        + "\n"
-    )
+    all_exports = sorted(module_exports.values())
+    all_list = "__all__ = [\n"
+    for model_name in all_exports:
+        all_list += f'    "{model_name}",\n'
+    all_list += "]\n"
 
-    with Path(output_path).open("w") as f:
-        f.write(final_code)
+    init_content = header + "\n\n" + "\n".join(import_lines) + "\n\n\n" + all_list
+    init_file.write_text(init_content)
 
-    logger.info(f"Generated record models at {output_path}")
+    logger.info(f"Generated {init_file} with {len(module_exports)} exports")
 
 
 def generate_models_for_connector(connector_name: str) -> None:
@@ -423,14 +448,20 @@ def generate_models_for_connector(connector_name: str) -> None:
             for stream_name, schema in schemas.items():
                 save_schema_artifact(connector_id, connector_type, stream_name, schema)
 
-            records_path = connector_path / "records.py"
-            generate_record_models(connector_name, connector_id, schemas, records_path)
+            old_records_file = connector_path / "records.py"
+            if old_records_file.exists():
+                old_records_file.unlink()
+                logger.info(f"Removed old records.py file: {old_records_file}")
+
+            records_dir = connector_path / "records"
+            generate_record_models(connector_name, connector_id, schemas, records_dir)
         else:
             logger.warning(f"No inline schemas found in manifest for {connector_name}")
     else:
         logger.warning(f"No declarative manifest found for {connector_name}")
 
-    if config_path.exists() or (connector_path / "records.py").exists():
+    records_dir = connector_path / "records"
+    if config_path.exists() or records_dir.exists():
         (base_path / connector_id / "__init__.py").write_text(
             f'"""Models for {connector_id} connector."""\n'
         )
@@ -466,7 +497,6 @@ def main() -> None:
             "source-mysql",
             "destination-mysql",
             "destination-dev-null",
-            "source-stripe",
             "source-github",
             "source-xkcd",
             "source-n8n",

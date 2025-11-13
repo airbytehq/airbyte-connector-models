@@ -61,6 +61,11 @@ ignore = [
     "RUF012",  # Mutable class attributes (generated code pattern)
     "N815",    # mixedCase variable names (preserve original API field names)
 ]
+"airbyte_connector_models/connectors/**/records/*.py" = [
+    "E501",    # Line too long (generated models may have long descriptions)
+    "RUF012",  # Mutable class attributes (generated code pattern)
+    "N815",    # mixedCase variable names (preserve original API field names)
+]
 "scripts/generate_models.py" = [
     "PLR0912", # Too many branches (complex manifest parsing logic)
     "TRY300",  # Return in try block (acceptable for early return pattern)
