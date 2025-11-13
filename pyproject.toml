@@ -34,3 +34,17 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["airbyte_connector_models"]
+
+[tool.poe.tasks]
+install = "uv pip install --system -e '.[dev]'"
+generate = { shell = """
+  # Clone Airbyte monorepo if not present
+  if [ ! -d airbyte-monorepo ]; then
+    git clone --depth 1 https://github.com/airbytehq/airbyte.git airbyte-monorepo
+  fi
+  # Set environment variable and run generation script
+  export AIRBYTE_MONOREPO_PATH=$(pwd)/airbyte-monorepo
+  python scripts/generate_models.py
+""" }
+autofix = { shell = "ruff format . && ruff check --fix ." }
+lock = "uv lock --upgrade"

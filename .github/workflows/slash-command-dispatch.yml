@@ -19,6 +19,8 @@ jobs:
           issue-type: pull-request
           commands: |
             generate
+            autofix
+            lock
           static-args: |
             pr=${{ github.event.issue.number }}
             comment-id=${{ github.event.comment.id }}
