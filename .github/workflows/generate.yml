@@ -1,0 +1,25 @@
+name: Generate Models (Slash Command)
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: 'Pull request number'
+        required: true
+        type: string
+      comment-id:
+        description: 'Comment ID'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate:
+    uses: ./.github/workflows/generate-command.yml
+    with:
+      trigger: slash
+      pull_number: ${{ inputs.pr }}
+    secrets: inherit
