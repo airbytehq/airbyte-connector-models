@@ -33,9 +33,13 @@ help = "Auto-fix linting and formatting issues"
 sequence = ["format", { cmd = "ruff check --fix ." }]
 
 [tasks.generate]
-help = "Generate connector models"
-cmd = "python scripts/generate_models.py"
+help = "Generate all connector and metadata models"
+cmd = "python -m src.generate.main --all"
 
 [tasks.generate-connector]
 help = "Generate models for a specific connector"
-cmd = "python scripts/generate_models.py --connector ${connector}"
+cmd = "python -m src.generate.main --connector ${connector}"
+
+[tasks.generate-metadata]
+help = "Generate metadata models only"
+cmd = "python -m src.generate.main --metadata"

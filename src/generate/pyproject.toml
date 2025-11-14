@@ -1,0 +1,16 @@
+[project]
+name = "airbyte-connector-models-generate"
+version = "0.1.0"
+description = "Code generation tools for airbyte-connector-models"
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "pyyaml>=6.0",
+    "datamodel-code-generator>=0.25.0,<1.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/generate"]
