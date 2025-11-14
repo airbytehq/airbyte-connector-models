@@ -105,6 +105,45 @@ def get_connector_spec(connector_name: str) -> dict[str, Any]:
     raise RuntimeError(f"No spec file found for {connector_name}")
 
 
+def get_config_spec_for_connector(connector_name: str) -> dict[str, Any] | None:
+    """Get config spec from either spec files or declarative manifest.
+
+    Args:
+        connector_name: The connector name (e.g., "source-postgres")
+
+    Returns:
+        A dict with connectionSpecification key, or None if no spec found
+    """
+    try:
+        spec = get_connector_spec(connector_name)
+        logger.info(f"Found spec file for {connector_name}")
+        return spec
+    except RuntimeError:
+        logger.info(f"No spec file found for {connector_name}, checking manifest")
+
+    try:
+        manifest = get_declarative_manifest(connector_name)
+        if manifest and "spec" in manifest:
+            spec_section = manifest["spec"]
+
+            connection_spec = spec_section.get("connection_specification") or spec_section.get(
+                "connectionSpecification"
+            )
+
+            if connection_spec:
+                logger.info(f"Found declarative spec in manifest for {connector_name}")
+                return {"connectionSpecification": connection_spec}
+            logger.info(
+                f"Manifest spec section exists but no connection_specification "
+                f"found for {connector_name}"
+            )
+    except Exception as e:
+        logger.debug(f"Could not extract spec from manifest for {connector_name}: {e}")
+
+    logger.info(f"No config spec found for {connector_name} (neither spec file nor manifest)")
+    return None
+
+
 def generate_config_model(
     connector_name: str,
     spec: dict[str, Any],
@@ -462,12 +501,14 @@ def generate_models_for_connector(connector_name: str) -> None:
     connector_path = base_path / connector_id / connector_type
     config_path = connector_path / "config.py"
 
-    try:
-        spec = get_connector_spec(connector_name)
+    spec = get_config_spec_for_connector(connector_name)
+    if spec:
         generate_config_model(connector_name, spec, config_path)
         save_config_schema_artifact(connector_id, connector_type, spec)
-    except RuntimeError:
-        logger.warning(f"No spec file found for {connector_name}, skipping config model generation")
+    else:
+        logger.warning(
+            f"No config spec found for {connector_name}, skipping config model generation"
+        )
 
     # Try to generate record models from declarative manifest
     manifest = get_declarative_manifest(connector_name)
