@@ -330,7 +330,7 @@ def save_schema_artifact(
     stream_name: str,
     schema: dict[str, Any],
 ) -> Path:
-    """Save a JSON schema artifact for a stream.
+    """Save a JSON schema artifact for a stream adjacent to the Python model.
 
     Args:
         connector_id: The connector ID (e.g., "xkcd")
@@ -341,7 +341,7 @@ def save_schema_artifact(
     Returns:
         Path to the saved schema file
     """
-    schema_dir = JSON_SCHEMA_DIR / connector_id / connector_type / "records"
+    schema_dir = REPO_ROOT / "models" / "connectors" / connector_id / connector_type / "records"
     schema_dir.mkdir(parents=True, exist_ok=True)
 
     schema_file = schema_dir / f"{stream_name}.json"
@@ -356,7 +356,7 @@ def save_config_schema_artifact(
     connector_type: str,
     spec: dict[str, Any],
 ) -> Path:
-    """Save a JSON schema artifact for connector configuration.
+    """Save a JSON schema artifact for connector configuration adjacent to the Python model.
 
     Args:
         connector_id: The connector ID (e.g., "xkcd")
@@ -366,7 +366,7 @@ def save_config_schema_artifact(
     Returns:
         Path to the saved schema file
     """
-    schema_dir = JSON_SCHEMA_DIR / connector_id / connector_type
+    schema_dir = REPO_ROOT / "models" / "connectors" / connector_id / connector_type
     schema_dir.mkdir(parents=True, exist_ok=True)
 
     schema_file = schema_dir / "configuration.json"
@@ -499,7 +499,7 @@ def generate_models_for_connector(connector_name: str) -> None:
 
     base_path = Path(__file__).parent.parent / "models" / "connectors"
     connector_path = base_path / connector_id / connector_type
-    config_path = connector_path / "config.py"
+    config_path = connector_path / "configuration.py"
 
     spec = get_config_spec_for_connector(connector_name)
     if spec:

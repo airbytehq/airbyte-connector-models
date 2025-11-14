@@ -7,7 +7,7 @@ from typing import Annotated
 
 from pydantic import ConfigDict, Field
 
-from airbyte_connector_models._internal.base_config import BaseConfig
+from models.connectors._internal.base_config import BaseConfig
 
 
 class DestinationDuckdbConfigSpec(BaseConfig):

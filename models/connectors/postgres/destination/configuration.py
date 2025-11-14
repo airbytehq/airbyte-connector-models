@@ -8,7 +8,7 @@ from typing import Annotated, Literal
 
 from pydantic import ConfigDict, Field
 
-from airbyte_connector_models._internal.base_config import BaseConfig
+from models.connectors._internal.base_config import BaseConfig
 
 
 class DestinationPostgresConfigSpec(BaseConfig):

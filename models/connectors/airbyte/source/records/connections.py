@@ -7,7 +7,7 @@ from typing import Any
 
 from pydantic import ConfigDict
 
-from airbyte_connector_models._internal.base_record import BaseRecordModel
+from models.connectors._internal.base_record import BaseRecordModel
 
 
 class AirbyteConnectionsRecord(BaseRecordModel):

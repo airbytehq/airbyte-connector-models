@@ -7,7 +7,7 @@ from typing import Annotated
 
 from pydantic import Field
 
-from airbyte_connector_models._internal.base_record import BaseRecordModel
+from models.connectors._internal.base_record import BaseRecordModel
 
 
 class DockerhubDockerHubRecord(BaseRecordModel):

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from pydantic import ConfigDict
 
-from airbyte_connector_models._internal.base_record import BaseRecordModel
+from models.connectors._internal.base_record import BaseRecordModel
 
 
 class PokeapiPokemonRecord(BaseRecordModel):
