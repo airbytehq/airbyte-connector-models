@@ -6,7 +6,9 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from .utils import get_repo_root
+import yaml
+
+from .utils import get_repo_root, to_snake_case_module
 
 logger = logging.getLogger(__name__)
 
@@ -36,13 +38,12 @@ def generate_metadata_models() -> None:
 
     for schema_file in schema_files:
         model_name = schema_file.stem  # e.g., "ConnectorMetadataDefinitionV0"
-        output_file = output_dir / f"{schema_file.stem.lower()}.py"
+        module_name = to_snake_case_module(schema_file.stem)
+        output_file = output_dir / f"{module_name}.py"
 
-        logger.info(f"Generating model for {schema_file.name}")
+        logger.info(f"Generating model for {schema_file.name} -> {module_name}.py")
 
         try:
-            import yaml
-
             with schema_file.open() as f:
                 schema_data = yaml.safe_load(f)
 
