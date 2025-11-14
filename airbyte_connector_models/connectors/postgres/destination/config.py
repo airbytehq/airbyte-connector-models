@@ -11,7 +11,7 @@ from pydantic import ConfigDict, Field
 from airbyte_connector_models._internal.base_config import BaseConfig
 
 
-class DestinationPostgresConfig(BaseConfig):
+class DestinationPostgresConfigSpec(BaseConfig):
     model_config = ConfigDict(
         extra="allow",
     )
@@ -26,9 +26,7 @@ class DestinationPostgresConfig(BaseConfig):
             title="Port",
         ),
     ]
-    database: Annotated[
-        str, Field(description="Name of the database.", title="DB Name")
-    ]
+    database: Annotated[str, Field(description="Name of the database.", title="DB Name")]
     schema_: Annotated[
         str,
         Field(
@@ -53,7 +51,13 @@ class DestinationPostgresConfig(BaseConfig):
         ),
     ] = False
     ssl_mode: Annotated[
-        SslMode | SslMode1 | SslMode2 | SslMode3 | SslMode4 | SslMode5 | None,
+        DestinationPostgresConfigSpecDisable
+        | DestinationPostgresConfigSpecAllow
+        | DestinationPostgresConfigSpecPrefer
+        | DestinationPostgresConfigSpecRequire
+        | DestinationPostgresConfigSpecVerifyCa
+        | DestinationPostgresConfigSpecVerifyFull
+        | None,
         Field(
             description='SSL connection modes. \n <b>disable</b> - Chose this mode to disable encryption of communication between Airbyte and destination database\n <b>allow</b> - Chose this mode to enable encryption only when required by the source database\n <b>prefer</b> - Chose this mode to allow unencrypted connection only if the source database does not support encryption\n <b>require</b> - Chose this mode to always require encryption. If the source database server does not support encryption, connection will fail\n  <b>verify-ca</b> - Chose this mode to always require encryption and to verify that the source database server has a valid SSL certificate\n  <b>verify-full</b> - This is the most secure mode. Chose this mode to always require encryption and to verify the identity of the source database server\n See more information - <a href="https://jdbc.postgresql.org/documentation/head/ssl-client.html"> in the docs</a>.',
             title="SSL modes",
@@ -96,42 +100,7 @@ class DestinationPostgresConfig(BaseConfig):
     ] = False
 
 
-class Mode(Enum):
-    disable = "disable"
-
-
-class Mode1(Enum):
-    allow = "allow"
-
-
-class Mode2(Enum):
-    prefer = "prefer"
-
-
-class Mode3(Enum):
-    require = "require"
-
-
-class Mode4(Enum):
-    verify_ca = "verify-ca"
-
-
-class Mode5(Enum):
-    verify_full = "verify-full"
-
-
-class SslMode(BaseConfig):
-    """
-    Disable SSL.
-    """
-
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    mode: Literal["disable"]
-
-
-class SslMode1(BaseConfig):
+class DestinationPostgresConfigSpecAllow(BaseConfig):
     """
     Allow SSL mode.
     """
@@ -142,7 +111,26 @@ class SslMode1(BaseConfig):
     mode: Literal["allow"]
 
 
-class SslMode2(BaseConfig):
+class DestinationPostgresConfigSpecAllowMode(Enum):
+    allow = "allow"
+
+
+class DestinationPostgresConfigSpecDisable(BaseConfig):
+    """
+    Disable SSL.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    mode: Literal["disable"]
+
+
+class DestinationPostgresConfigSpecDisableMode(Enum):
+    disable = "disable"
+
+
+class DestinationPostgresConfigSpecPrefer(BaseConfig):
     """
     Prefer SSL mode.
     """
@@ -153,7 +141,11 @@ class SslMode2(BaseConfig):
     mode: Literal["prefer"]
 
 
-class SslMode3(BaseConfig):
+class DestinationPostgresConfigSpecPreferMode(Enum):
+    prefer = "prefer"
+
+
+class DestinationPostgresConfigSpecRequire(BaseConfig):
     """
     Require SSL mode.
     """
@@ -164,7 +156,11 @@ class SslMode3(BaseConfig):
     mode: Literal["require"]
 
 
-class SslMode4(BaseConfig):
+class DestinationPostgresConfigSpecRequireMode(Enum):
+    require = "require"
+
+
+class DestinationPostgresConfigSpecVerifyCa(BaseConfig):
     """
     Verify-ca SSL mode.
     """
@@ -173,9 +169,7 @@ class SslMode4(BaseConfig):
         extra="forbid",
     )
     mode: Literal["verify-ca"]
-    ca_certificate: Annotated[
-        str, Field(description="CA certificate", title="CA certificate")
-    ]
+    ca_certificate: Annotated[str, Field(description="CA certificate", title="CA certificate")]
     client_key_password: Annotated[
         str | None,
         Field(
@@ -185,7 +179,11 @@ class SslMode4(BaseConfig):
     ] = None
 
 
-class SslMode5(BaseConfig):
+class DestinationPostgresConfigSpecVerifyCaMode(Enum):
+    verify_ca = "verify-ca"
+
+
+class DestinationPostgresConfigSpecVerifyFull(BaseConfig):
     """
     Verify-full SSL mode.
     """
@@ -194,9 +192,7 @@ class SslMode5(BaseConfig):
         extra="forbid",
     )
     mode: Literal["verify-full"]
-    ca_certificate: Annotated[
-        str, Field(description="CA certificate", title="CA certificate")
-    ]
+    ca_certificate: Annotated[str, Field(description="CA certificate", title="CA certificate")]
     client_certificate: Annotated[
         str, Field(description="Client certificate", title="Client certificate")
     ]
@@ -208,3 +204,7 @@ class SslMode5(BaseConfig):
             title="Client key password",
         ),
     ] = None
+
+
+class DestinationPostgresConfigSpecVerifyFullMode(Enum):
+    verify_full = "verify-full"

@@ -1,0 +1,59 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "bytesSynced": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "connectionId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "duration": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "jobId": {
+      "type": "number"
+    },
+    "jobType": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "lastUpdatedAt": {
+      "type": "string"
+    },
+    "rowsSynced": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "startTime": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "jobId",
+    "lastUpdatedAt"
+  ]
+}

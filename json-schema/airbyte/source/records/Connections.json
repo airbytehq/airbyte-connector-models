@@ -1,0 +1,187 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/schema#",
+  "additionalProperties": true,
+  "properties": {
+    "configurations": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "streams": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "cursorField": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "mappers": {
+                "type": [
+                  "array",
+                  "null"
+                ]
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "primaryKey": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              "selectedFields": {
+                "type": [
+                  "array",
+                  "null"
+                ]
+              },
+              "syncMode": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "connectionId": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "dataResidency": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "destinationId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "name": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "namespaceDefinition": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "namespaceFormat": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "nonBreakingSchemaUpdatesBehavior": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "prefix": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "schedule": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "basicTiming": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cronExpression": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "scheduleType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "sourceId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tags": {
+      "type": [
+        "array",
+        "null"
+      ]
+    },
+    "workspaceId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "connectionId"
+  ]
+}

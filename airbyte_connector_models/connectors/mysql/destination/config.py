@@ -10,7 +10,7 @@ from pydantic import ConfigDict, Field
 from airbyte_connector_models._internal.base_config import BaseConfig
 
 
-class DestinationMysqlConfig(BaseConfig):
+class DestinationMysqlConfigSpec(BaseConfig):
     model_config = ConfigDict(
         extra="allow",
     )
@@ -25,9 +25,7 @@ class DestinationMysqlConfig(BaseConfig):
             title="Port",
         ),
     ]
-    database: Annotated[
-        str, Field(description="Name of the database.", title="DB Name")
-    ]
+    database: Annotated[str, Field(description="Name of the database.", title="DB Name")]
     username: Annotated[
         str, Field(description="Username to use to access the database.", title="User")
     ]

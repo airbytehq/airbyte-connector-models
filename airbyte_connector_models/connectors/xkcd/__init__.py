@@ -1,0 +1,1 @@
+"""Models for xkcd connector."""
