@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "comic_number": {
+      "type": "string",
+      "title": "comic_number",
+      "description": "Specifies the comic number in which details are to be extracted, pagination will begin with that number to end of available comics",
+      "default": "2960",
+      "order": 0
+    }
+  },
+  "additionalProperties": true
+}
