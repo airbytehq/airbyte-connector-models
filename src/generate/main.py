@@ -4,7 +4,7 @@ import argparse
 import logging
 
 from .connector_spec import get_config_spec_for_connector, get_declarative_manifest
-from .metadata_generation import generate_metadata_models
+from .metadata_generation import generate_consolidated_metadata_model, generate_metadata_models
 from .model_generation import (
     generate_config_model,
     generate_record_models,
@@ -115,11 +115,23 @@ def main() -> None:
         action="store_true",
         help="Generate metadata models",
     )
+    parser.add_argument(
+        "--consolidated",
+        action="store_true",
+        help="Generate consolidated metadata model from bundled JSON (requires npm run bundle-schemas first)",
+    )
 
     args = parser.parse_args()
 
+    if args.consolidated:
+        logger.info("Generating consolidated metadata model only")
+        generate_consolidated_metadata_model()
+        return
+
     if args.metadata:
+        logger.info("Generating metadata models only")
         generate_metadata_models()
+        return
     elif args.connector:
         generate_models_for_connector(args.connector)
     elif args.all:

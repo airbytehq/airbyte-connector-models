@@ -103,3 +103,64 @@ def generate_metadata_models() -> None:
     init_file.write_text(init_content)
 
     logger.info(f"Generated {len(schema_files)} metadata models in {output_dir}")
+
+
+def generate_consolidated_metadata_model() -> None:
+    """Generate a single consolidated Pydantic model from bundled JSON schema.
+
+    Reads the bundled ConnectorMetadataDefinitionV0.json and generates a single
+    Python file containing all metadata model classes.
+    """
+    logger.info("Generating consolidated metadata model from bundled JSON")
+
+    repo_root = get_repo_root()
+    bundled_json = repo_root / "models" / "metadata" / "v0" / "ConnectorMetadataDefinitionV0.json"
+    output_file = repo_root / "models" / "metadata" / "v0" / "connector_metadata_definition_v0.py"
+
+    if not bundled_json.exists():
+        logger.error(f"Bundled JSON not found: {bundled_json}")
+        logger.error("Run 'npm run bundle-schemas' first to create the bundled JSON")
+        return
+
+    header_path = repo_root / ".header.txt"
+
+    try:
+        subprocess.run(
+            [
+                "datamodel-codegen",
+                "--input",
+                str(bundled_json),
+                "--output",
+                str(output_file),
+                "--input-file-type",
+                "jsonschema",
+                "--output-model-type",
+                "pydantic_v2.BaseModel",
+                "--use-standard-collections",
+                "--use-union-operator",
+                "--field-constraints",
+                "--use-annotated",
+                "--keyword-only",
+                "--disable-timestamp",
+                "--use-exact-imports",
+                "--use-double-quotes",
+                "--keep-model-order",
+                "--use-schema-description",
+                "--parent-scoped-naming",
+                "--use-title-as-name",
+                "--target-python-version",
+                "3.10",
+                "--custom-file-header-path",
+                str(header_path),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        logger.info(f"Generated consolidated model: {output_file}")
+
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed to generate consolidated model: {e}")
+        logger.error(f"stdout: {e.stdout}")
+        logger.error(f"stderr: {e.stderr}")

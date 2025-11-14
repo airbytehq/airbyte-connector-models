@@ -43,3 +43,15 @@ cmd = "python -m src.generate.main --connector ${connector}"
 [tasks.generate-metadata]
 help = "Generate metadata models only"
 cmd = "python -m src.generate.main --metadata"
+
+[tasks.generate-metadata-consolidated]
+help = "Generate consolidated metadata model from bundled JSON"
+cmd = "python -m src.generate.main --consolidated"
+
+[tasks.bundle-metadata-schemas]
+help = "Bundle metadata schemas into consolidated JSON"
+cmd = "npm run bundle-schemas"
+
+[tasks.generate-metadata-full]
+help = "Bundle schemas and generate consolidated metadata model"
+sequence = ["bundle-metadata-schemas", "generate-metadata-consolidated"]
