@@ -1,8 +1,8 @@
 """Internal utilities for airbyte-connector-models."""
 
-from airbyte_connector_models._internal.base_config import BaseConfig
-from airbyte_connector_models._internal.base_record import BaseRecordModel
-from airbyte_connector_models._internal.normalizer import (
+from models.connectors._internal.base_config import BaseConfig
+from models.connectors._internal.base_record import BaseRecordModel
+from models.connectors._internal.normalizer import (
     needs_normalization,
     normalize_field_name,
 )

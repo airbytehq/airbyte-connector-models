@@ -194,7 +194,7 @@ def generate_config_model(
                 "--class-name",
                 model_name,
                 "--base-class",
-                "airbyte_connector_models._internal.base_config.BaseConfig",
+                "models.connectors._internal.base_config.BaseConfig",
                 "--use-standard-collections",
                 "--use-union-operator",
                 "--field-constraints",
@@ -445,7 +445,7 @@ def generate_record_models(
                     "--class-name",
                     model_name,
                     "--base-class",
-                    "airbyte_connector_models._internal.base_record.BaseRecordModel",
+                    "models.connectors._internal.base_record.BaseRecordModel",
                     "--use-standard-collections",
                     "--use-union-operator",
                     "--field-constraints",
@@ -497,7 +497,7 @@ def generate_models_for_connector(connector_name: str) -> None:
         logger.error(f"Invalid connector name: {connector_name}")
         return
 
-    base_path = Path(__file__).parent.parent / "airbyte_connector_models" / "connectors"
+    base_path = Path(__file__).parent.parent / "models" / "connectors"
     connector_path = base_path / connector_id / connector_type
     config_path = connector_path / "config.py"
 

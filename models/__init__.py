@@ -1,6 +1,6 @@
 """Typed Pydantic models for Airbyte connectors."""
 
-from airbyte_connector_models._internal.base_record import BaseRecordModel
+from models.connectors._internal.base_record import BaseRecordModel
 
 __version__ = "0.1.0"
 
