@@ -48,10 +48,10 @@ ignore = [
 
 # Per-file ignores for intentional design choices and generated code
 [lint.per-file-ignores]
-"airbyte_connector_models/_internal/base_record.py" = [
+"models/connectors/_internal/base_record.py" = [
     "ANN401",  # Allow Any for dict-like access methods
 ]
-"airbyte_connector_models/connectors/**/*.py" = [
+"models/connectors/**/*.py" = [
     "E501",    # Line too long (generated models may have long descriptions)
     "RUF012",  # Mutable class attributes (generated code pattern)
     "N815",    # mixedCase variable names (preserve original API field names)
