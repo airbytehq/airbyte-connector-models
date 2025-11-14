@@ -11,7 +11,7 @@ from pydantic import ConfigDict, Field
 from airbyte_connector_models._internal.base_config import BaseConfig
 
 
-class PostgresDestinationSpec(BaseConfig):
+class DestinationPostgresConfigSpec(BaseConfig):
     model_config = ConfigDict(
         extra="allow",
     )
@@ -51,12 +51,12 @@ class PostgresDestinationSpec(BaseConfig):
         ),
     ] = False
     ssl_mode: Annotated[
-        PostgresDestinationSpecDisable
-        | PostgresDestinationSpecAllow
-        | PostgresDestinationSpecPrefer
-        | PostgresDestinationSpecRequire
-        | PostgresDestinationSpecVerifyCa
-        | PostgresDestinationSpecVerifyFull
+        DestinationPostgresConfigSpecDisable
+        | DestinationPostgresConfigSpecAllow
+        | DestinationPostgresConfigSpecPrefer
+        | DestinationPostgresConfigSpecRequire
+        | DestinationPostgresConfigSpecVerifyCa
+        | DestinationPostgresConfigSpecVerifyFull
         | None,
         Field(
             description='SSL connection modes. \n <b>disable</b> - Chose this mode to disable encryption of communication between Airbyte and destination database\n <b>allow</b> - Chose this mode to enable encryption only when required by the source database\n <b>prefer</b> - Chose this mode to allow unencrypted connection only if the source database does not support encryption\n <b>require</b> - Chose this mode to always require encryption. If the source database server does not support encryption, connection will fail\n  <b>verify-ca</b> - Chose this mode to always require encryption and to verify that the source database server has a valid SSL certificate\n  <b>verify-full</b> - This is the most secure mode. Chose this mode to always require encryption and to verify the identity of the source database server\n See more information - <a href="https://jdbc.postgresql.org/documentation/head/ssl-client.html"> in the docs</a>.',
@@ -100,7 +100,7 @@ class PostgresDestinationSpec(BaseConfig):
     ] = False
 
 
-class PostgresDestinationSpecAllow(BaseConfig):
+class DestinationPostgresConfigSpecAllow(BaseConfig):
     """
     Allow SSL mode.
     """
@@ -111,11 +111,11 @@ class PostgresDestinationSpecAllow(BaseConfig):
     mode: Literal["allow"]
 
 
-class PostgresDestinationSpecAllowMode(Enum):
+class DestinationPostgresConfigSpecAllowMode(Enum):
     allow = "allow"
 
 
-class PostgresDestinationSpecDisable(BaseConfig):
+class DestinationPostgresConfigSpecDisable(BaseConfig):
     """
     Disable SSL.
     """
@@ -126,11 +126,11 @@ class PostgresDestinationSpecDisable(BaseConfig):
     mode: Literal["disable"]
 
 
-class PostgresDestinationSpecDisableMode(Enum):
+class DestinationPostgresConfigSpecDisableMode(Enum):
     disable = "disable"
 
 
-class PostgresDestinationSpecPrefer(BaseConfig):
+class DestinationPostgresConfigSpecPrefer(BaseConfig):
     """
     Prefer SSL mode.
     """
@@ -141,11 +141,11 @@ class PostgresDestinationSpecPrefer(BaseConfig):
     mode: Literal["prefer"]
 
 
-class PostgresDestinationSpecPreferMode(Enum):
+class DestinationPostgresConfigSpecPreferMode(Enum):
     prefer = "prefer"
 
 
-class PostgresDestinationSpecRequire(BaseConfig):
+class DestinationPostgresConfigSpecRequire(BaseConfig):
     """
     Require SSL mode.
     """
@@ -156,11 +156,11 @@ class PostgresDestinationSpecRequire(BaseConfig):
     mode: Literal["require"]
 
 
-class PostgresDestinationSpecRequireMode(Enum):
+class DestinationPostgresConfigSpecRequireMode(Enum):
     require = "require"
 
 
-class PostgresDestinationSpecVerifyCa(BaseConfig):
+class DestinationPostgresConfigSpecVerifyCa(BaseConfig):
     """
     Verify-ca SSL mode.
     """
@@ -179,11 +179,11 @@ class PostgresDestinationSpecVerifyCa(BaseConfig):
     ] = None
 
 
-class PostgresDestinationSpecVerifyCaMode(Enum):
+class DestinationPostgresConfigSpecVerifyCaMode(Enum):
     verify_ca = "verify-ca"
 
 
-class PostgresDestinationSpecVerifyFull(BaseConfig):
+class DestinationPostgresConfigSpecVerifyFull(BaseConfig):
     """
     Verify-full SSL mode.
     """
@@ -206,5 +206,5 @@ class PostgresDestinationSpecVerifyFull(BaseConfig):
     ] = None
 
 
-class PostgresDestinationSpecVerifyFullMode(Enum):
+class DestinationPostgresConfigSpecVerifyFullMode(Enum):
     verify_full = "verify-full"

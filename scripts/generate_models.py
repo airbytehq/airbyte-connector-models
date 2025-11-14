@@ -127,10 +127,13 @@ def generate_config_model(
     parts = connector_name.split("-")
     connector_type = parts[0].capitalize()
     connector_id = "".join(p.capitalize() for p in parts[1:])
-    model_name = f"{connector_type}{connector_id}Config"
+    model_name = f"{connector_type}{connector_id}ConfigSpec"
+
+    schema_for_codegen = connection_spec.copy()
+    schema_for_codegen.pop("title", None)
 
     with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as temp_file:
-        json.dump(connection_spec, temp_file)
+        json.dump(schema_for_codegen, temp_file)
         temp_schema_path = temp_file.name
 
     try:

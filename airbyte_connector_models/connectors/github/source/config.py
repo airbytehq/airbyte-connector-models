@@ -10,13 +10,13 @@ from pydantic import AwareDatetime, ConfigDict, Field, RootModel
 from airbyte_connector_models._internal.base_config import BaseConfig
 
 
-class GitHubSourceSpec(BaseConfig):
+class SourceGithubConfigSpec(BaseConfig):
     model_config = ConfigDict(
         extra="allow",
         regex_engine="python-re",
     )
     credentials: Annotated[
-        GitHubSourceSpecOAuth | GitHubSourceSpecPersonalAccessToken,
+        SourceGithubConfigSpecOAuth | SourceGithubConfigSpecPersonalAccessToken,
         Field(description="Choose how to authenticate to GitHub", title="Authentication"),
     ]
     repository: Annotated[
@@ -33,7 +33,7 @@ class GitHubSourceSpec(BaseConfig):
         ),
     ] = None
     repositories: Annotated[
-        list[GitHubSourceSpecGitHubRepository],
+        list[SourceGithubConfigSpecGitHubRepository],
         Field(
             description="List of GitHub organizations/repositories, e.g. `airbytehq/airbyte` for single repository, `airbytehq/*` for get all repositories from organization and `airbytehq/a* for matching multiple repositories by pattern.",
             examples=[
@@ -91,14 +91,14 @@ class GitHubSourceSpec(BaseConfig):
     ] = 10
 
 
-class GitHubSourceSpecGitHubRepository(RootModel[str]):
+class SourceGithubConfigSpecGitHubRepository(RootModel[str]):
     model_config = ConfigDict(
         regex_engine="python-re",
     )
     root: Annotated[str, Field(pattern="^[\\w.-]+/(([\\w.-]*\\*)|[\\w.-]+(?<!\\.git))$")]
 
 
-class GitHubSourceSpecOAuth(BaseConfig):
+class SourceGithubConfigSpecOAuth(BaseConfig):
     """
     Choose how to authenticate to GitHub
     """
@@ -111,7 +111,7 @@ class GitHubSourceSpecOAuth(BaseConfig):
     ] = None
 
 
-class GitHubSourceSpecPersonalAccessToken(BaseConfig):
+class SourceGithubConfigSpecPersonalAccessToken(BaseConfig):
     """
     Choose how to authenticate to GitHub
     """
