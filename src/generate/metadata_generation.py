@@ -117,11 +117,38 @@ def generate_consolidated_metadata_model() -> None:
     bundled_json = repo_root / "models" / "metadata" / "v0" / "ConnectorMetadataDefinitionV0.json"
     output_file = repo_root / "models" / "metadata" / "v0" / "connector_metadata_definition_v0.py"
 
+    _generate_consolidated_model(bundled_json, output_file, "ConnectorMetadataDefinitionV0")
+
+
+def generate_consolidated_registry_model() -> None:
+    """Generate a single consolidated Pydantic model for registry from bundled JSON schema.
+
+    Reads the bundled ConnectorRegistryV0.json and generates a single
+    Python file containing all registry model classes.
+    """
+    logger.info("Generating consolidated registry model from bundled JSON")
+
+    repo_root = get_repo_root()
+    bundled_json = repo_root / "models" / "metadata" / "v0" / "ConnectorRegistryV0.json"
+    output_file = repo_root / "models" / "metadata" / "v0" / "connector_registry_v0.py"
+
+    _generate_consolidated_model(bundled_json, output_file, "ConnectorRegistryV0")
+
+
+def _generate_consolidated_model(bundled_json: Path, output_file: Path, schema_name: str) -> None:
+    """Internal helper to generate a consolidated model from bundled JSON.
+    
+    Args:
+        bundled_json: Path to the bundled JSON schema
+        output_file: Path to the output Python file
+        schema_name: Name of the schema for logging
+    """
     if not bundled_json.exists():
         logger.error(f"Bundled JSON not found: {bundled_json}")
         logger.error("Run 'npm run bundle-schemas' first to create the bundled JSON")
         return
 
+    repo_root = get_repo_root()
     header_path = repo_root / ".header.txt"
 
     try:
@@ -161,6 +188,6 @@ def generate_consolidated_metadata_model() -> None:
         logger.info(f"Generated consolidated model: {output_file}")
 
     except subprocess.CalledProcessError as e:
-        logger.error(f"Failed to generate consolidated model: {e}")
+        logger.error(f"Failed to generate consolidated model for {schema_name}: {e}")
         logger.error(f"stdout: {e.stdout}")
         logger.error(f"stderr: {e.stderr}")

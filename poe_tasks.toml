@@ -55,3 +55,15 @@ cmd = "npm run bundle-schemas"
 [tasks.generate-metadata-full]
 help = "Bundle schemas and generate consolidated metadata model"
 sequence = ["bundle-metadata-schemas", "generate-metadata-consolidated"]
+
+[tasks.generate-registry]
+help = "Generate consolidated registry model from bundled JSON"
+cmd = "python -m src.generate.main --registry"
+
+[tasks.generate-registry-full]
+help = "Bundle schemas and generate consolidated registry model"
+sequence = ["bundle-metadata-schemas", "generate-registry"]
+
+[tasks.generate-all-consolidated]
+help = "Bundle schemas and generate both metadata and registry models"
+sequence = ["bundle-metadata-schemas", "generate-metadata-consolidated", "generate-registry"]
