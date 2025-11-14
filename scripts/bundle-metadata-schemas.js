@@ -44,6 +44,27 @@ async function bundleSchemas() {
     console.log('✅ Successfully bundled schema to', BUNDLE_OUTPUT);
     console.log(`   Updated $id to: ${NEW_SCHEMA_ID}`);
     console.log('   This bundled schema can be used for IDE validation and other tools.');
+
+    const parser = new $RefParser();
+    await parser.bundle(ENTRY_SCHEMA, {
+      dereference: {
+        circular: 'ignore'
+      }
+    });
+    
+    const referencedPaths = parser.$refs.paths();
+    const yamlFiles = referencedPaths.filter(p => p.includes('src/metadata/v0') && p.endsWith('.yaml'));
+    
+    console.log(`\n📊 Referenced ${yamlFiles.length} YAML files from src/metadata/v0/`);
+    
+    const reportPath = path.join(OUTPUT_DIR, 'bundle-report.json');
+    fs.writeFileSync(reportPath, JSON.stringify({
+      entryPoint: ENTRY_SCHEMA,
+      referencedFiles: yamlFiles.map(p => path.basename(p)),
+      totalReferencedCount: yamlFiles.length
+    }, null, 2));
+    
+    console.log(`   Report written to: ${reportPath}`);
   } catch (error) {
     console.error('❌ Error bundling schemas:', error.message);
     console.error(error.stack);
