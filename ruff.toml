@@ -57,11 +57,6 @@ ignore = [
     "N815",    # mixedCase variable names (preserve original API field names)
     "PLR0912", # Too many branches (generated nested models)
 ]
-"scripts/generate_models.py" = [
-    "PLR0912", # Too many branches (complex manifest parsing logic)
-    "TRY300",  # Return in try block (acceptable for early return pattern)
-    "SIM102",  # Nested if statements (more readable for complex conditions)
-]
 "tests/**/*.py" = [
     "ANN201",  # Missing return type annotations (test methods don't need them)
 ]
