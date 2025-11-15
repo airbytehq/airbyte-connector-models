@@ -7,6 +7,8 @@ Typed Pydantic models for Airbyte connectors, providing type-safe configuration 
 This package provides automatically generated Pydantic models for:
 - **Config Models**: Type-safe configuration for all Airbyte connectors
 - **Record Models**: Typed records for all source connector streams
+- **Metadata Models**: Models used in `metadata.yaml` files
+- **Registry Models**: Modules used by the Airbyte Connector Registry
 
 Models are generated nightly from the latest connector specifications and schemas.
 
@@ -21,11 +23,11 @@ pip install airbyte-connector-models
 ### Config Models
 
 ```python
-from airbyte_connector_models.connectors.postgres.source.config import SourcePostgresConfig
-import airbyte as ab
+from airbyte_connector_models.connectors.postgres.source.config import SourcePostgresConfigSpec
+import airbyte as ab  # Optional import if using with PyAirbyte
 
 # Type-safe config
-config = SourcePostgresConfig(
+config = SourcePostgresConfigSpec(
     host="localhost",
     port=5432,
     database="mydb",
@@ -33,11 +35,13 @@ config = SourcePostgresConfig(
     password="pass"
 )
 
-# Use with PyAirbyte
+# Use with PyAirbyte (optional)
 source = ab.get_source("source-postgres", config=config)
 ```
 
 ### Record Models
+
+Note: Below is planned functionality (not yet available).
 
 ```python
 from airbyte_connector_models.connectors.postgres.source.records import PostgresUsersRecord
@@ -67,31 +71,18 @@ for record in source.get_records("users", as_model=PostgresUsersRecord):
 ```
 airbyte_connector_models/
 ├── connectors/
-│   ├── postgres/
+│   ├── github/
 │   │   ├── source/
-│   │   │   ├── config.py      # SourcePostgresConfig
-│   │   │   └── records.py     # PostgresUsersRecord, PostgresOrdersRecord, etc.
+│   │   │   ├── configuration.py      # SourceGitHubConficSpec
+│   │   │   ├── configuration.json    # JSON Schema Spec
+│   │   │   └── records/              # Module containing record model specifications
 │   │   └── destination/
-│   │       └── config.py      # DestinationPostgresConfig
+│   │   │   ├── configuration.py      # DestinationGitHubConficSpec
+│   │   │   ├── configuration.json    # JSON Schema Spec
 │   └── ...
 ```
 
-## Development
+## Contributing
 
-```bash
-# Install dependencies
-poetry install
+See the [Contributing Guide](CONTRIBUTING.md)
 
-# Generate models
-python scripts/generate_models.py
-
-# Run tests
-pytest
-
-# Lint
-ruff check .
-```
-
-## License
-
-MIT
