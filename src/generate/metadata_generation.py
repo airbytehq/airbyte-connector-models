@@ -137,7 +137,7 @@ def generate_consolidated_registry_model() -> None:
 
 def _generate_consolidated_model(bundled_json: Path, output_file: Path, schema_name: str) -> None:
     """Internal helper to generate a consolidated model from bundled JSON.
-    
+
     Args:
         bundled_json: Path to the bundled JSON schema
         output_file: Path to the output Python file
@@ -188,6 +188,6 @@ def _generate_consolidated_model(bundled_json: Path, output_file: Path, schema_n
         logger.info(f"Generated consolidated model: {output_file}")
 
     except subprocess.CalledProcessError as e:
-        logger.error(f"Failed to generate consolidated model for {schema_name}: {e}")
-        logger.error(f"stdout: {e.stdout}")
-        logger.error(f"stderr: {e.stderr}")
+        logger.exception(f"Failed to generate consolidated model for {schema_name}")
+        logger.info(f"stdout: {e.stdout}")
+        logger.info(f"stderr: {e.stderr}")
