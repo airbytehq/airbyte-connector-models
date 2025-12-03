@@ -122,12 +122,14 @@ def main() -> None:
     parser.add_argument(
         "--consolidated",
         action="store_true",
-        help="Generate consolidated metadata model from bundled JSON (requires npm run bundle-schemas first)",
+        help="Generate consolidated metadata model from bundled JSON "
+        "(requires npm run bundle-schemas first)",
     )
     parser.add_argument(
         "--registry",
         action="store_true",
-        help="Generate consolidated registry model from bundled JSON (requires npm run bundle-schemas first)",
+        help="Generate consolidated registry model from bundled JSON "
+        "(requires npm run bundle-schemas first)",
     )
 
     args = parser.parse_args()
@@ -146,7 +148,8 @@ def main() -> None:
         logger.info("Generating metadata models only")
         generate_metadata_models()
         return
-    elif args.connector:
+
+    if args.connector:
         generate_models_for_connector(args.connector)
     elif args.all:
         for connector in CONNECTORS:

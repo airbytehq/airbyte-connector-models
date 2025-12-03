@@ -56,8 +56,16 @@ ignore = [
     "RUF012",  # Mutable class attributes (generated code pattern)
     "N815",    # mixedCase variable names (preserve original API field names)
     "PLR0912", # Too many branches (generated nested models)
+    "F821",    # Undefined name (forward references in generated code)
 ]
-"scripts/generate_models.py" = [
+"models/metadata/**/*.py" = [
+    "E501",    # Line too long (generated models may have long descriptions)
+    "RUF012",  # Mutable class attributes (generated code pattern)
+    "N815",    # mixedCase variable names (preserve original API field names)
+    "PLR0912", # Too many branches (generated nested models)
+    "F821",    # Undefined name (forward references in generated code)
+]
+"src/generate/**/*.py" = [
     "PLR0912", # Too many branches (complex manifest parsing logic)
     "TRY300",  # Return in try block (acceptable for early return pattern)
     "SIM102",  # Nested if statements (more readable for complex conditions)
