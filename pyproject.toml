@@ -1,6 +1,6 @@
 [project]
 name = "airbyte-connector-models"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Typed Pydantic models for Airbyte connectors"
 readme = "README.md"
 requires-python = ">=3.10,<3.13"
@@ -29,8 +29,16 @@ dev = [
 ]
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "uv-dynamic-versioning"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[tool.uv-dynamic-versioning]
+vcs = "git"
+style = "pep440"
+fallback-version = "0.0.0"
 
 [tool.hatch.build.targets.wheel]
 packages = ["models"]
