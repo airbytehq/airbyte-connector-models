@@ -68,6 +68,7 @@ class SourcePostgresConfigSpec(BaseConfig):
             description="Configures how data is extracted from the database.",
             title="Update Method",
         ),
+        # pyrefly: ignore [bad-assignment]
     ] = "CDC"
     entra_service_principal_auth: Annotated[
         bool | None,
@@ -148,6 +149,7 @@ class SourcePostgresConfigSpecReadChangesUsingWriteAheadLogCDC(BaseConfig):
             description="A logical decoding plugin installed on the PostgreSQL server.",
             title="Plugin",
         ),
+        # pyrefly: ignore [bad-assignment]
     ] = "pgoutput"
     replication_slot: Annotated[
         str,
@@ -183,6 +185,7 @@ class SourcePostgresConfigSpecReadChangesUsingWriteAheadLogCDC(BaseConfig):
             description="Determines when Airbyte should flush the LSN of processed WAL logs in the source database. `After loading Data in the destination` is default. If `While reading Data` is selected, in case of a downstream failure (while loading data into the destination), next sync would result in a full sync.",
             title="LSN commit behaviour",
         ),
+        # pyrefly: ignore [bad-assignment]
     ] = "After loading Data in the destination"
     heartbeat_action_query: Annotated[
         str | None,
@@ -198,6 +201,7 @@ class SourcePostgresConfigSpecReadChangesUsingWriteAheadLogCDC(BaseConfig):
             description="Determines whether Airbyte should fail or re-sync data in case of an stale/invalid cursor value into the WAL. If 'Fail sync' is chosen, a user will have to manually reset the connection before being able to continue syncing data. If 'Re-sync data' is chosen, Airbyte will automatically trigger a refresh but could lead to higher cloud costs and data loss.",
             title="Invalid CDC position behavior (Advanced)",
         ),
+        # pyrefly: ignore [bad-assignment]
     ] = "Fail sync"
     initial_load_timeout_hours: Annotated[
         int | None,
