@@ -76,13 +76,13 @@ jobs:
             return pr.head.ref;
       
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ inputs.trigger == 'slash' && steps.get-pr-branch.outputs.result || github.ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Checkout Airbyte monorepo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: airbytehq/airbyte
           path: airbyte-monorepo
