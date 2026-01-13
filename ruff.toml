@@ -77,7 +77,3 @@ ignore = [
 [format]
 quote-style = "double"
 indent-style = "space"
-exclude = [
-    "models/connectors/**/*.py",
-    "models/metadata/**/*.py",
-]
