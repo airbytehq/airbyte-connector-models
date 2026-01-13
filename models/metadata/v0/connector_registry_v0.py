@@ -26,6 +26,22 @@ class AllowedHosts(BaseModel):
         ),
     ] = None
 
+class StreamBreakingChangeScope(BaseModel):
+    """
+    A scope that can be used to limit the impact of a breaking change to specific streams.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    scopeType: Literal["stream"]
+    impactedScopes: Annotated[
+        list[str],
+        Field(
+            description="List of streams that are impacted by the breaking change.",
+            min_length=1,
+        ),
+    ]
 
 class BreakingChangeScope(RootModel[StreamBreakingChangeScope]):
     root: Annotated[
@@ -35,7 +51,6 @@ class BreakingChangeScope(RootModel[StreamBreakingChangeScope]):
         ),
     ]
 
-
 class ConnectorRegistryV0(BaseModel):
     """
     describes the collection of connectors retrieved from a registry
@@ -43,7 +58,6 @@ class ConnectorRegistryV0(BaseModel):
 
     destinations: list[ConnectorRegistryV0ConnectorRegistryDestinationDefinition]
     sources: list[ConnectorRegistryV0ConnectorRegistrySourceDefinition]
-
 
 class ConnectorRegistryV0ActorDefinitionResourceRequirements(BaseModel):
     """
@@ -60,7 +74,6 @@ class ConnectorRegistryV0ActorDefinitionResourceRequirements(BaseModel):
         ),
     ] = None
     jobSpecific: list[JobTypeResourceLimit] | None = None
-
 
 class ConnectorRegistryV0AirbyteInternal(BaseModel):
     """
@@ -80,7 +93,6 @@ class ConnectorRegistryV0AirbyteInternal(BaseModel):
         ),
     ] = True
 
-
 class ConnectorRegistryV0AirbyteInternalQl(Enum):
     integer_0 = 0
     integer_100 = 100
@@ -90,13 +102,11 @@ class ConnectorRegistryV0AirbyteInternalQl(Enum):
     integer_500 = 500
     integer_600 = 600
 
-
 class ConnectorRegistryV0AirbyteInternalSl(Enum):
     integer_0 = 0
     integer_100 = 100
     integer_200 = 200
     integer_300 = 300
-
 
 class ConnectorRegistryV0ConnectorPackageInfo(BaseModel):
     """
@@ -104,7 +114,6 @@ class ConnectorRegistryV0ConnectorPackageInfo(BaseModel):
     """
 
     cdk_version: str | None = None
-
 
 class ConnectorRegistryV0ConnectorRegistryDestinationDefinition(BaseModel):
     """
@@ -183,7 +192,6 @@ class ConnectorRegistryV0ConnectorRegistryDestinationDefinition(BaseModel):
     language: Annotated[
         str | None, Field(description="The language the connector is written in")
     ] = None
-
 
 class ConnectorRegistryV0ConnectorRegistryDestinationDefinition1(BaseModel):
     """
@@ -323,7 +331,6 @@ class ConnectorRegistryV0ConnectorRegistryDestinationDefinitionNormalizationDest
         ),
     ]
 
-
 class ConnectorRegistryV0ConnectorRegistryReleases(BaseModel):
     """
     Contains information about different types of releases for a connector.
@@ -353,7 +360,6 @@ class ConnectorRegistryV0ConnectorRegistryReleases(BaseModel):
             description="URL to documentation on how to migrate from the previous version to the current version. Defaults to ${documentationUrl}-migrations"
         ),
     ] = None
-
 
 class ConnectorRegistryV0ConnectorRegistryReleasesRolloutConfiguration(BaseModel):
     """
@@ -390,7 +396,6 @@ class ConnectorRegistryV0ConnectorRegistryReleasesRolloutConfiguration(BaseModel
             ge=10,
         ),
     ] = 10
-
 
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition(BaseModel):
     """
@@ -512,7 +517,6 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition(BaseModel):
     ] = None
     supportsFileTransfer: bool | None = False
     supportsDataActivation: bool | None = False
-
 
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1(BaseModel):
     """
@@ -655,7 +659,6 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1ActorDefinitionResour
     ] = None
     jobSpecific: list[JobTypeResourceLimit] | None = None
 
-
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1AirbyteInternal(BaseModel):
     """
     Fields for internal use only
@@ -678,7 +681,6 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1AirbyteInternal(BaseM
         ),
     ] = True
 
-
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1AirbyteInternalQl(Enum):
     integer_0 = 0
     integer_100 = 100
@@ -688,13 +690,11 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1AirbyteInternalQl(Enu
     integer_500 = 500
     integer_600 = 600
 
-
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1AirbyteInternalSl(Enum):
     integer_0 = 0
     integer_100 = 100
     integer_200 = 200
     integer_300 = 300
-
 
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1AllowedHosts(BaseModel):
     """
@@ -794,7 +794,6 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1ConnectorRegistryRele
         ),
     ] = 10
 
-
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFields(BaseModel):
     """
     Optional schema for fields generated at metadata upload time
@@ -888,7 +887,6 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFieldsSource
     metadata_last_modified: str | None = None
     registry_entry_generated_at: str | None = None
 
-
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1ReleaseStage(Enum):
     """
     enum that describes a connector's release stage
@@ -899,13 +897,11 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1ReleaseStage(Enum):
     generally_available = "generally_available"
     custom = "custom"
 
-
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1SourceType(Enum):
     api = "api"
     file = "file"
     database = "database"
     custom = "custom"
-
 
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1SuggestedStreams(BaseModel):
     """
@@ -921,7 +917,6 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1SuggestedStreams(Base
             description="An array of streams that this connector suggests the average user will want.  SuggestedStreams not being present for the source means that all streams are suggested.  An empty list here means that no streams are suggested."
         ),
     ] = None
-
 
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1SupportLevel(Enum):
     """
@@ -951,7 +946,6 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionActorDefinitionResourc
     ] = None
     jobSpecific: list[JobTypeResourceLimit] | None = None
 
-
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionAirbyteInternal(BaseModel):
     """
     Fields for internal use only
@@ -974,7 +968,6 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionAirbyteInternal(BaseMo
         ),
     ] = True
 
-
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionAirbyteInternalQl(Enum):
     integer_0 = 0
     integer_100 = 100
@@ -984,13 +977,11 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionAirbyteInternalQl(Enum
     integer_500 = 500
     integer_600 = 600
 
-
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionAirbyteInternalSl(Enum):
     integer_0 = 0
     integer_100 = 100
     integer_200 = 200
     integer_300 = 300
-
 
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionAllowedHosts(BaseModel):
     """
@@ -1090,7 +1081,6 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionConnectorRegistryRelea
         ),
     ] = 10
 
-
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFields(BaseModel):
     """
     Optional schema for fields generated at metadata upload time
@@ -1184,7 +1174,6 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFieldsSourceF
     metadata_last_modified: str | None = None
     registry_entry_generated_at: str | None = None
 
-
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionReleaseStage(Enum):
     """
     enum that describes a connector's release stage
@@ -1195,13 +1184,11 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionReleaseStage(Enum):
     generally_available = "generally_available"
     custom = "custom"
 
-
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionSourceType(Enum):
     api = "api"
     file = "file"
     database = "database"
     custom = "custom"
-
 
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionSuggestedStreams(BaseModel):
     """
@@ -1218,7 +1205,6 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionSuggestedStreams(BaseM
         ),
     ] = None
 
-
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionSupportLevel(Enum):
     """
     enum that describes a connector's release stage
@@ -1227,7 +1213,6 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionSupportLevel(Enum):
     community = "community"
     certified = "certified"
     archived = "archived"
-
 
 class ConnectorRegistryV0GeneratedFields(BaseModel):
     """
@@ -1257,7 +1242,6 @@ class ConnectorRegistryV0GeneratedFields(BaseModel):
     ] = None
     sbomUrl: Annotated[str | None, Field(description="URL to the SBOM file")] = None
 
-
 class ConnectorRegistryV0GeneratedFieldsConnectorMetrics(BaseModel):
     """
     Information about the source file that generated the registry entry
@@ -1266,7 +1250,6 @@ class ConnectorRegistryV0GeneratedFieldsConnectorMetrics(BaseModel):
     all: Any | None = None
     cloud: Any | None = None
     oss: Any | None = None
-
 
 class ConnectorRegistryV0GeneratedFieldsGitInfo(BaseModel):
     """
@@ -1301,7 +1284,6 @@ class ConnectorRegistryV0GeneratedFieldsGitInfo(BaseModel):
         ),
     ] = None
 
-
 class ConnectorRegistryV0GeneratedFieldsSourceFileInfo(BaseModel):
     """
     Information about the source file that generated the registry entry
@@ -1313,7 +1295,6 @@ class ConnectorRegistryV0GeneratedFieldsSourceFileInfo(BaseModel):
     metadata_last_modified: str | None = None
     registry_entry_generated_at: str | None = None
 
-
 class ConnectorReleaseCandidates(RootModel[dict[str, VersionReleaseCandidate]]):
     root: Annotated[
         dict[str, VersionReleaseCandidate],
@@ -1321,7 +1302,6 @@ class ConnectorReleaseCandidates(RootModel[dict[str, VersionReleaseCandidate]]):
             description="Each entry denotes a release candidate version of a connector."
         ),
     ]
-
 
 class JobTypeResourceLimit(BaseModel):
     """
@@ -1346,7 +1326,6 @@ class JobTypeResourceLimit(BaseModel):
         ),
     ]
 
-
 class JobTypeResourceLimitJobType(Enum):
     """
     enum that describes the different types of jobs that the platform runs.
@@ -1359,7 +1338,6 @@ class JobTypeResourceLimitJobType(Enum):
     reset_connection = "reset_connection"
     connection_updater = "connection_updater"
     replicate = "replicate"
-
 
 class JobTypeResourceLimitResourceRequirements(BaseModel):
     """
@@ -1374,7 +1352,6 @@ class JobTypeResourceLimitResourceRequirements(BaseModel):
     memory_request: str | None = None
     memory_limit: str | None = None
 
-
 class ReleaseStage(Enum):
     """
     enum that describes a connector's release stage
@@ -1384,7 +1361,6 @@ class ReleaseStage(Enum):
     beta = "beta"
     generally_available = "generally_available"
     custom = "custom"
-
 
 class ResourceRequirements(BaseModel):
     """
@@ -1399,25 +1375,6 @@ class ResourceRequirements(BaseModel):
     memory_request: str | None = None
     memory_limit: str | None = None
 
-
-class StreamBreakingChangeScope(BaseModel):
-    """
-    A scope that can be used to limit the impact of a breaking change to specific streams.
-    """
-
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    scopeType: Literal["stream"]
-    impactedScopes: Annotated[
-        list[str],
-        Field(
-            description="List of streams that are impacted by the breaking change.",
-            min_length=1,
-        ),
-    ]
-
-
 class SupportLevel(Enum):
     """
     enum that describes a connector's release stage
@@ -1426,7 +1383,6 @@ class SupportLevel(Enum):
     community = "community"
     certified = "certified"
     archived = "archived"
-
 
 class VersionBreakingChange(BaseModel):
     """
@@ -1462,7 +1418,6 @@ class VersionBreakingChange(BaseModel):
             min_length=1,
         ),
     ] = None
-
 
 class VersionBreakingChangeDeadlineAction(Enum):
     """

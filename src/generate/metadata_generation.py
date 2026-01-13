@@ -2,6 +2,7 @@
 
 import json
 import logging
+import re
 import subprocess
 import tempfile
 from pathlib import Path
@@ -11,6 +12,113 @@ import yaml
 from .utils import get_repo_root, to_snake_case_module
 
 logger = logging.getLogger(__name__)
+
+
+def _parse_classes(
+    lines: list[str],
+    class_pattern: re.Pattern[str],
+) -> dict[str, tuple[int, int, str, str]]:
+    """Parse class definitions from file lines.
+
+    Returns a dict mapping class name to (start_line, end_line, class_text, base_classes).
+    """
+    classes: dict[str, tuple[int, int, str, str]] = {}
+    i = 0
+    while i < len(lines):
+        match = class_pattern.match(lines[i])
+        if match:
+            class_name, base_classes, start_line = match.group(1), match.group(2), i
+            j = i + 1
+            while j < len(lines) and not class_pattern.match(lines[j]):
+                j += 1
+            classes[class_name] = (start_line, j, "\n".join(lines[start_line:j]), base_classes)
+            i = j
+        else:
+            i += 1
+    return classes
+
+
+def _build_dependency_graph(
+    classes: dict[str, tuple[int, int, str, str]],
+) -> dict[str, set[str]]:
+    """Build a dependency graph from class definitions."""
+    dependencies: dict[str, set[str]] = {name: set() for name in classes}
+    for class_name, (_, _, _, base_classes) in classes.items():
+        for other_class in classes:
+            if other_class != class_name and other_class in base_classes:
+                dependencies[class_name].add(other_class)
+    return dependencies
+
+
+def _needs_reordering(
+    classes: dict[str, tuple[int, int, str, str]],
+    dependencies: dict[str, set[str]],
+) -> bool:
+    """Check if any class references a dependency defined after it."""
+    class_order = list(classes.keys())
+    for i, class_name in enumerate(class_order):
+        for dep in dependencies[class_name]:
+            if dep in class_order and class_order.index(dep) > i:
+                return True
+    return False
+
+
+def _topological_sort(
+    classes: dict[str, tuple[int, int, str, str]],
+    dependencies: dict[str, set[str]],
+) -> list[str]:
+    """Perform topological sort to get correct class order."""
+    sorted_classes: list[str] = []
+    visited: set[str] = set()
+    temp_visited: set[str] = set()
+
+    def visit(name: str) -> None:
+        if name in temp_visited or name in visited:
+            return
+        temp_visited.add(name)
+        for dep in dependencies.get(name, set()):
+            if dep in classes:
+                visit(dep)
+        temp_visited.remove(name)
+        visited.add(name)
+        sorted_classes.append(name)
+
+    for class_name in classes:
+        visit(class_name)
+    return sorted_classes
+
+
+def _fix_forward_references(file_path: Path) -> None:
+    """Fix forward reference issues in generated Pydantic models.
+
+    datamodel-codegen may generate classes in an order where a class references
+    another class (in its base class) before that class is defined. This function
+    reorders classes to ensure dependencies are defined before their dependents.
+
+    Args:
+        file_path: Path to the generated Python file to fix
+    """
+    content = file_path.read_text()
+    lines = content.split("\n")
+    class_pattern = re.compile(r"^class (\w+)\(([^)]+)\):", re.MULTILINE)
+
+    classes = _parse_classes(lines, class_pattern)
+    if not classes:
+        return
+
+    dependencies = _build_dependency_graph(classes)
+    if not _needs_reordering(classes, dependencies):
+        return
+
+    logger.info(f"Fixing forward references in {file_path}")
+    sorted_classes = _topological_sort(classes, dependencies)
+
+    first_class_start = min(info[0] for info in classes.values())
+    header = "\n".join(lines[:first_class_start])
+    new_content = header + "".join(classes[name][2] for name in sorted_classes)
+
+    file_path.write_text(new_content)
+    logger.info(f"Reordered {len(sorted_classes)} classes in {file_path}")
 
 
 def generate_metadata_models() -> None:
@@ -186,6 +294,9 @@ def _generate_consolidated_model(bundled_json: Path, output_file: Path, schema_n
         )
 
         logger.info(f"Generated consolidated model: {output_file}")
+
+        # Fix forward reference issues in the generated code
+        _fix_forward_references(output_file)
 
     except subprocess.CalledProcessError as e:
         logger.exception(f"Failed to generate consolidated model for {schema_name}")
