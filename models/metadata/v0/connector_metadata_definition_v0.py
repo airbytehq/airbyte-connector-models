@@ -27,7 +27,7 @@ class AllowedHosts(BaseModel):
     ] = None
 
 
-class BreakingChangeScope(RootModel[StreamBreakingChangeScope]):  # pyright: ignore[reportUndefinedVariable]
+class BreakingChangeScope(RootModel[StreamBreakingChangeScope]):
     root: Annotated[
         StreamBreakingChangeScope,
         Field(

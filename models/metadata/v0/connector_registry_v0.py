@@ -27,7 +27,7 @@ class AllowedHosts(BaseModel):
     ] = None
 
 
-class BreakingChangeScope(RootModel[StreamBreakingChangeScope]):  # pyright: ignore[reportUndefinedVariable]
+class BreakingChangeScope(RootModel[StreamBreakingChangeScope]):
     root: Annotated[
         StreamBreakingChangeScope,
         Field(
@@ -1314,7 +1314,7 @@ class ConnectorRegistryV0GeneratedFieldsSourceFileInfo(BaseModel):
     registry_entry_generated_at: str | None = None
 
 
-class ConnectorReleaseCandidates(RootModel[dict[str, VersionReleaseCandidate]]):  # pyright: ignore[reportUndefinedVariable]
+class ConnectorReleaseCandidates(RootModel[dict[str, VersionReleaseCandidate]]):
     root: Annotated[
         dict[str, VersionReleaseCandidate],
         Field(
