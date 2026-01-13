@@ -10,6 +10,8 @@ from uuid import UUID
 
 from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict, Field, RootModel
 
+# NOTE: Class ordering is significant. Classes are sorted by dependency order
+# to avoid forward reference errors. Do not reorder manually.
 
 class AllowedHosts(BaseModel):
     """

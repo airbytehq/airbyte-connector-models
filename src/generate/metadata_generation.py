@@ -115,7 +115,13 @@ def _fix_forward_references(file_path: Path) -> None:
 
     first_class_start = min(info[0] for info in classes.values())
     header = "\n".join(lines[:first_class_start])
-    new_content = header + "".join(classes[name][2] for name in sorted_classes)
+
+    # Add a comment indicating class ordering is significant
+    ordering_comment = (
+        "# NOTE: Class ordering is significant. Classes are sorted by dependency order\n"
+        "# to avoid forward reference errors. Do not reorder manually.\n\n"
+    )
+    new_content = header + ordering_comment + "".join(classes[name][2] for name in sorted_classes)
 
     file_path.write_text(new_content)
     logger.info(f"Reordered {len(sorted_classes)} classes in {file_path}")
