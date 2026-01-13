@@ -26,6 +26,7 @@ class AllowedHosts(BaseModel):
         ),
     ] = None
 
+
 # Defined above BreakingChangeScope which depends on it.
 class StreamBreakingChangeScope(BaseModel):
     """
@@ -44,13 +45,13 @@ class StreamBreakingChangeScope(BaseModel):
         ),
     ]
 
+
 class BreakingChangeScope(RootModel[StreamBreakingChangeScope]):
     root: Annotated[
         StreamBreakingChangeScope,
-        Field(
-            description="A scope that can be used to limit the impact of a breaking change."
-        ),
+        Field(description="A scope that can be used to limit the impact of a breaking change."),
     ]
+
 
 class ConnectorMetadataDefinitionV0(BaseModel):
     """
@@ -62,6 +63,7 @@ class ConnectorMetadataDefinitionV0(BaseModel):
     )
     metadataSpecVersion: str
     data: ConnectorMetadataDefinitionV0Data
+
 
 class ConnectorMetadataDefinitionV0ActorDefinitionResourceRequirements(BaseModel):
     """
@@ -78,6 +80,7 @@ class ConnectorMetadataDefinitionV0ActorDefinitionResourceRequirements(BaseModel
         ),
     ] = None
     jobSpecific: list[JobTypeResourceLimit] | None = None
+
 
 class ConnectorMetadataDefinitionV0Data(BaseModel):
     model_config = ConfigDict(
@@ -118,17 +121,15 @@ class ConnectorMetadataDefinitionV0Data(BaseModel):
     ] = None
     releaseDate: Annotated[
         date | None,
-        Field(
-            description="The date when this connector was first released, in yyyy-mm-dd format."
-        ),
+        Field(description="The date when this connector was first released, in yyyy-mm-dd format."),
     ] = None
     protocolVersion: Annotated[
         str | None,
         Field(description="the Airbyte Protocol version supported by the connector"),
     ] = None
-    erdUrl: Annotated[
-        str | None, Field(description="The URL where you can visualize the ERD")
-    ] = None
+    erdUrl: Annotated[str | None, Field(description="The URL where you can visualize the ERD")] = (
+        None
+    )
     connectorSubtype: ConnectorMetadataDefinitionV0DataConnectorSubtype
     releaseStage: Annotated[
         ConnectorMetadataDefinitionV0DataReleaseStage,
@@ -166,8 +167,7 @@ class ConnectorMetadataDefinitionV0Data(BaseModel):
         ),
     ] = None
     normalizationConfig: Annotated[
-        ConnectorMetadataDefinitionV0DataNormalizationDestinationDefinitionConfig
-        | None,
+        ConnectorMetadataDefinitionV0DataNormalizationDestinationDefinitionConfig | None,
         Field(
             description="describes a normalization config for destination definition",
             title="NormalizationDestinationDefinitionConfig",
@@ -213,6 +213,7 @@ class ConnectorMetadataDefinitionV0Data(BaseModel):
         Field(title="ConnectorIPCOptions"),
     ] = None
 
+
 class ConnectorMetadataDefinitionV0DataActorDefinitionResourceRequirements(BaseModel):
     """
     actor definition specific resource requirements
@@ -228,6 +229,7 @@ class ConnectorMetadataDefinitionV0DataActorDefinitionResourceRequirements(BaseM
         ),
     ] = None
     jobSpecific: list[JobTypeResourceLimit] | None = None
+
 
 class ConnectorMetadataDefinitionV0DataAirbyteInternal(BaseModel):
     """
@@ -247,6 +249,7 @@ class ConnectorMetadataDefinitionV0DataAirbyteInternal(BaseModel):
         ),
     ] = True
 
+
 class ConnectorMetadataDefinitionV0DataAirbyteInternalQl(Enum):
     integer_0 = 0
     integer_100 = 100
@@ -256,11 +259,13 @@ class ConnectorMetadataDefinitionV0DataAirbyteInternalQl(Enum):
     integer_500 = 500
     integer_600 = 600
 
+
 class ConnectorMetadataDefinitionV0DataAirbyteInternalSl(Enum):
     integer_0 = 0
     integer_100 = 100
     integer_200 = 200
     integer_300 = 300
+
 
 class ConnectorMetadataDefinitionV0DataAllowedHosts(BaseModel):
     """
@@ -277,6 +282,7 @@ class ConnectorMetadataDefinitionV0DataAllowedHosts(BaseModel):
         ),
     ] = None
 
+
 class ConnectorMetadataDefinitionV0DataConnectorBuildOptions(BaseModel):
     """
     metadata specific to the build process.
@@ -287,11 +293,13 @@ class ConnectorMetadataDefinitionV0DataConnectorBuildOptions(BaseModel):
     )
     baseImage: str | None = None
 
+
 class ConnectorMetadataDefinitionV0DataConnectorIPCOptions(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     dataChannel: ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannel
+
 
 class ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannel(BaseModel):
     model_config = ConfigDict(
@@ -314,11 +322,10 @@ class ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannelSupportedSe
     FLATBUFFERS = "FLATBUFFERS"
 
 
-class ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannelSupportedTransportEnum(
-    Enum
-):
+class ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannelSupportedTransportEnum(Enum):
     STDIO = "STDIO"
     SOCKET = "SOCKET"
+
 
 class ConnectorMetadataDefinitionV0DataConnectorReleases(BaseModel):
     """
@@ -348,6 +355,7 @@ class ConnectorMetadataDefinitionV0DataConnectorReleases(BaseModel):
             description="URL to documentation on how to migrate from the previous version to the current version. Defaults to ${documentationUrl}-migrations"
         ),
     ] = None
+
 
 class ConnectorMetadataDefinitionV0DataConnectorReleasesRolloutConfiguration(BaseModel):
     """
@@ -385,6 +393,7 @@ class ConnectorMetadataDefinitionV0DataConnectorReleasesRolloutConfiguration(Bas
         ),
     ] = 10
 
+
 class ConnectorMetadataDefinitionV0DataConnectorSubtype(Enum):
     api = "api"
     database = "database"
@@ -394,6 +403,7 @@ class ConnectorMetadataDefinitionV0DataConnectorSubtype(Enum):
     message_queue = "message_queue"
     unknown = "unknown"
     vectorstore = "vectorstore"
+
 
 class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptions(BaseModel):
     """
@@ -412,12 +422,10 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptions(BaseModel):
         Field(description="List of secrets required to run the test suite"),
     ] = None
     testConnections: Annotated[
-        list[ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsTestConnections]
-        | None,
-        Field(
-            description="List of sandbox cloud connections that tests can be run against"
-        ),
+        list[ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsTestConnections] | None,
+        Field(description="List of sandbox cloud connections that tests can be run against"),
     ] = None
+
 
 class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecret(BaseModel):
     """
@@ -430,9 +438,7 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecret(BaseModel
     name: Annotated[str, Field(description="The secret name in the secret store")]
     fileName: Annotated[
         str | None,
-        Field(
-            description="The name of the file to which the secret value would be persisted"
-        ),
+        Field(description="The name of the file to which the secret value would be persisted"),
     ] = None
     secretStore: Annotated[
         ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStore,
@@ -443,9 +449,7 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecret(BaseModel
     ]
 
 
-class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStore(
-    BaseModel
-):
+class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStore(BaseModel):
     """
     An object describing a secret store metadata
     """
@@ -460,20 +464,18 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStor
         ),
     ] = None
     type: Annotated[
-        ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStoreType
-        | None,
+        ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStoreType | None,
         Field(description="The type of the secret store"),
     ] = None
 
 
-class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStoreType(
-    Enum
-):
+class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStoreType(Enum):
     """
     The type of the secret store
     """
 
     GSM = "GSM"
+
 
 class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSuite(Enum):
     """
@@ -486,9 +488,7 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSuite(Enum):
     liveTests = "liveTests"
 
 
-class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsTestConnections(
-    BaseModel
-):
+class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsTestConnections(BaseModel):
     """
     List of sandbox cloud connections that tests can be run against
     """
@@ -499,9 +499,11 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsTestConnections(
     name: Annotated[str, Field(description="The connection name")]
     id: Annotated[str, Field(description="The connection ID")]
 
+
 class ConnectorMetadataDefinitionV0DataConnectorType(Enum):
     destination = "destination"
     source = "source"
+
 
 class ConnectorMetadataDefinitionV0DataExternalDocumentationUrl(BaseModel):
     model_config = ConfigDict(
@@ -520,6 +522,7 @@ class ConnectorMetadataDefinitionV0DataExternalDocumentationUrl(BaseModel):
         Field(description="Whether the URL requires authentication to access"),
     ] = False
 
+
 class ConnectorMetadataDefinitionV0DataExternalDocumentationUrlType(Enum):
     """
     Category of documentation (api_release_history, api_reference, api_deprecations, or other)
@@ -529,6 +532,7 @@ class ConnectorMetadataDefinitionV0DataExternalDocumentationUrlType(Enum):
     api_reference = "api_reference"
     api_deprecations = "api_deprecations"
     other = "other"
+
 
 class ConnectorMetadataDefinitionV0DataGeneratedFields(BaseModel):
     """
@@ -558,6 +562,7 @@ class ConnectorMetadataDefinitionV0DataGeneratedFields(BaseModel):
     ] = None
     sbomUrl: Annotated[str | None, Field(description="URL to the SBOM file")] = None
 
+
 class ConnectorMetadataDefinitionV0DataGeneratedFieldsConnectorMetrics(BaseModel):
     """
     Information about the source file that generated the registry entry
@@ -566,6 +571,7 @@ class ConnectorMetadataDefinitionV0DataGeneratedFieldsConnectorMetrics(BaseModel
     all: Any | None = None
     cloud: Any | None = None
     oss: Any | None = None
+
 
 class ConnectorMetadataDefinitionV0DataGeneratedFieldsGitInfo(BaseModel):
     """
@@ -577,21 +583,15 @@ class ConnectorMetadataDefinitionV0DataGeneratedFieldsGitInfo(BaseModel):
     )
     commit_sha: Annotated[
         str | None,
-        Field(
-            description="The git commit sha of the last commit that modified this file."
-        ),
+        Field(description="The git commit sha of the last commit that modified this file."),
     ] = None
     commit_timestamp: Annotated[
         AwareDatetime | None,
-        Field(
-            description="The git commit timestamp of the last commit that modified this file."
-        ),
+        Field(description="The git commit timestamp of the last commit that modified this file."),
     ] = None
     commit_author: Annotated[
         str | None,
-        Field(
-            description="The git commit author of the last commit that modified this file."
-        ),
+        Field(description="The git commit author of the last commit that modified this file."),
     ] = None
     commit_author_email: Annotated[
         str | None,
@@ -599,6 +599,7 @@ class ConnectorMetadataDefinitionV0DataGeneratedFieldsGitInfo(BaseModel):
             description="The git commit author email of the last commit that modified this file."
         ),
     ] = None
+
 
 class ConnectorMetadataDefinitionV0DataGeneratedFieldsSourceFileInfo(BaseModel):
     """
@@ -612,9 +613,7 @@ class ConnectorMetadataDefinitionV0DataGeneratedFieldsSourceFileInfo(BaseModel):
     registry_entry_generated_at: str | None = None
 
 
-class ConnectorMetadataDefinitionV0DataNormalizationDestinationDefinitionConfig(
-    BaseModel
-):
+class ConnectorMetadataDefinitionV0DataNormalizationDestinationDefinitionConfig(BaseModel):
     """
     describes a normalization config for destination definition
     """
@@ -641,14 +640,14 @@ class ConnectorMetadataDefinitionV0DataNormalizationDestinationDefinitionConfig(
         ),
     ]
 
+
 class ConnectorMetadataDefinitionV0DataRegistryOverrides(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    oss: ConnectorMetadataDefinitionV0DataRegistryOverridesRegistryOverrides | None = (
-        None
-    )
+    oss: ConnectorMetadataDefinitionV0DataRegistryOverridesRegistryOverrides | None = None
     cloud: ConnectorMetadataDefinitionV0RegistryOverrides | None = None
+
 
 class ConnectorMetadataDefinitionV0DataRegistryOverridesRegistryOverrides(BaseModel):
     """
@@ -676,6 +675,7 @@ class ConnectorMetadataDefinitionV0DataRegistryOverridesRegistryOverrides(BaseMo
         ConnectorMetadataDefinitionV0ActorDefinitionResourceRequirements | None
     ) = None
 
+
 class ConnectorMetadataDefinitionV0DataReleaseStage(Enum):
     """
     enum that describes a connector's release stage
@@ -686,6 +686,7 @@ class ConnectorMetadataDefinitionV0DataReleaseStage(Enum):
     generally_available = "generally_available"
     custom = "custom"
 
+
 class ConnectorMetadataDefinitionV0DataRemoteRegistries(BaseModel):
     """
     describes how the connector is published to remote registries
@@ -695,6 +696,7 @@ class ConnectorMetadataDefinitionV0DataRemoteRegistries(BaseModel):
         extra="forbid",
     )
     pypi: PyPi | None = None
+
 
 class ConnectorMetadataDefinitionV0DataSuggestedStreams(BaseModel):
     """
@@ -711,6 +713,7 @@ class ConnectorMetadataDefinitionV0DataSuggestedStreams(BaseModel):
         ),
     ] = None
 
+
 class ConnectorMetadataDefinitionV0DataSupportLevel(Enum):
     """
     enum that describes a connector's release stage
@@ -719,6 +722,7 @@ class ConnectorMetadataDefinitionV0DataSupportLevel(Enum):
     community = "community"
     certified = "certified"
     archived = "archived"
+
 
 class ConnectorMetadataDefinitionV0NormalizationDestinationDefinitionConfig(BaseModel):
     """
@@ -747,6 +751,7 @@ class ConnectorMetadataDefinitionV0NormalizationDestinationDefinitionConfig(Base
         ),
     ]
 
+
 class ConnectorMetadataDefinitionV0RegistryOverrides(BaseModel):
     """
     describes the overrides per registry of a connector
@@ -773,6 +778,7 @@ class ConnectorMetadataDefinitionV0RegistryOverrides(BaseModel):
         ConnectorMetadataDefinitionV0ActorDefinitionResourceRequirements | None
     ) = None
 
+
 class JobTypeResourceLimit(BaseModel):
     """
     sets resource requirements for a specific job type for an actor definition. these values override the default, if both are set.
@@ -796,6 +802,7 @@ class JobTypeResourceLimit(BaseModel):
         ),
     ]
 
+
 class JobTypeResourceLimitJobType(Enum):
     """
     enum that describes the different types of jobs that the platform runs.
@@ -808,6 +815,7 @@ class JobTypeResourceLimitJobType(Enum):
     reset_connection = "reset_connection"
     connection_updater = "connection_updater"
     replicate = "replicate"
+
 
 class JobTypeResourceLimitResourceRequirements(BaseModel):
     """
@@ -822,6 +830,7 @@ class JobTypeResourceLimitResourceRequirements(BaseModel):
     memory_request: str | None = None
     memory_limit: str | None = None
 
+
 class PyPi(BaseModel):
     """
     describes the PyPi publishing options
@@ -832,6 +841,7 @@ class PyPi(BaseModel):
     )
     enabled: bool
     packageName: Annotated[str, Field(description="The name of the package on PyPi.")]
+
 
 class ResourceRequirements(BaseModel):
     """
@@ -845,6 +855,7 @@ class ResourceRequirements(BaseModel):
     cpu_limit: str | None = None
     memory_request: str | None = None
     memory_limit: str | None = None
+
 
 class SuggestedStreams(BaseModel):
     """
@@ -861,6 +872,7 @@ class SuggestedStreams(BaseModel):
         ),
     ] = None
 
+
 class VersionBreakingChange(BaseModel):
     """
     Contains information about a breaking change, including the deadline to upgrade and a message detailing the change.
@@ -875,9 +887,7 @@ class VersionBreakingChange(BaseModel):
             description="The deadline by which to upgrade before the breaking change takes effect."
         ),
     ]
-    message: Annotated[
-        str, Field(description="Descriptive message detailing the breaking change.")
-    ]
+    message: Annotated[str, Field(description="Descriptive message detailing the breaking change.")]
     deadlineAction: Annotated[
         VersionBreakingChangeDeadlineAction | None,
         Field(description="Action to do when the deadline is reached."),
@@ -895,6 +905,7 @@ class VersionBreakingChange(BaseModel):
             min_length=1,
         ),
     ] = None
+
 
 class VersionBreakingChangeDeadlineAction(Enum):
     """

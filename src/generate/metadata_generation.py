@@ -131,14 +131,17 @@ def _fix_forward_references(file_path: Path) -> None:
     header = "\n".join(lines[:first_class_start])
 
     # Build new content with targeted comments on moved classes
-    new_content = header
-    for class_name in sorted_classes:
-        class_text = classes[class_name][2]
+    new_content = header.rstrip("\n") + "\n\n\n"
+    for i, class_name in enumerate(sorted_classes):
+        class_text = classes[class_name][2].strip("\n")
+        if i > 0:
+            new_content += "\n\n\n"  # Two blank lines between classes (PEP 8)
         if class_name in moved_classes:
             deps_list = ", ".join(sorted(moved_classes[class_name]))
             comment = f"# Defined above {deps_list} which depends on it.\n"
             new_content += comment
         new_content += class_text
+    new_content += "\n"
 
     file_path.write_text(new_content)
     logger.info(f"Reordered {len(sorted_classes)} classes in {file_path}")

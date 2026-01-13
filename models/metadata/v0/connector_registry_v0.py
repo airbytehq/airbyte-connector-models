@@ -26,6 +26,7 @@ class AllowedHosts(BaseModel):
         ),
     ] = None
 
+
 # Defined above BreakingChangeScope which depends on it.
 class StreamBreakingChangeScope(BaseModel):
     """
@@ -44,13 +45,13 @@ class StreamBreakingChangeScope(BaseModel):
         ),
     ]
 
+
 class BreakingChangeScope(RootModel[StreamBreakingChangeScope]):
     root: Annotated[
         StreamBreakingChangeScope,
-        Field(
-            description="A scope that can be used to limit the impact of a breaking change."
-        ),
+        Field(description="A scope that can be used to limit the impact of a breaking change."),
     ]
+
 
 class ConnectorRegistryV0(BaseModel):
     """
@@ -59,6 +60,7 @@ class ConnectorRegistryV0(BaseModel):
 
     destinations: list[ConnectorRegistryV0ConnectorRegistryDestinationDefinition]
     sources: list[ConnectorRegistryV0ConnectorRegistrySourceDefinition]
+
 
 class ConnectorRegistryV0ActorDefinitionResourceRequirements(BaseModel):
     """
@@ -75,6 +77,7 @@ class ConnectorRegistryV0ActorDefinitionResourceRequirements(BaseModel):
         ),
     ] = None
     jobSpecific: list[JobTypeResourceLimit] | None = None
+
 
 class ConnectorRegistryV0AirbyteInternal(BaseModel):
     """
@@ -94,6 +97,7 @@ class ConnectorRegistryV0AirbyteInternal(BaseModel):
         ),
     ] = True
 
+
 class ConnectorRegistryV0AirbyteInternalQl(Enum):
     integer_0 = 0
     integer_100 = 100
@@ -103,11 +107,13 @@ class ConnectorRegistryV0AirbyteInternalQl(Enum):
     integer_500 = 500
     integer_600 = 600
 
+
 class ConnectorRegistryV0AirbyteInternalSl(Enum):
     integer_0 = 0
     integer_100 = 100
     integer_200 = 200
     integer_300 = 300
+
 
 class ConnectorRegistryV0ConnectorPackageInfo(BaseModel):
     """
@@ -115,6 +121,7 @@ class ConnectorRegistryV0ConnectorPackageInfo(BaseModel):
     """
 
     cdk_version: str | None = None
+
 
 class ConnectorRegistryV0ConnectorRegistryDestinationDefinition(BaseModel):
     """
@@ -140,9 +147,7 @@ class ConnectorRegistryV0ConnectorRegistryDestinationDefinition(BaseModel):
     ] = False
     public: Annotated[
         bool | None,
-        Field(
-            description="true if this connector definition is available to all workspaces"
-        ),
+        Field(description="true if this connector definition is available to all workspaces"),
     ] = False
     custom: Annotated[
         bool | None, Field(description="whether this is a custom connector definition")
@@ -151,9 +156,7 @@ class ConnectorRegistryV0ConnectorRegistryDestinationDefinition(BaseModel):
     supportLevel: SupportLevel | None = None
     releaseDate: Annotated[
         date | None,
-        Field(
-            description="The date when this connector was first released, in yyyy-mm-dd format."
-        ),
+        Field(description="The date when this connector was first released, in yyyy-mm-dd format."),
     ] = None
     tags: Annotated[
         list[str] | None,
@@ -161,9 +164,7 @@ class ConnectorRegistryV0ConnectorRegistryDestinationDefinition(BaseModel):
             description="An array of tags that describe the connector. E.g: language:python, keyword:rds, etc."
         ),
     ] = None
-    resourceRequirements: (
-        ConnectorRegistryV0ActorDefinitionResourceRequirements | None
-    ) = None
+    resourceRequirements: ConnectorRegistryV0ActorDefinitionResourceRequirements | None = None
     protocolVersion: Annotated[
         str | None,
         Field(description="the Airbyte Protocol version supported by the connector"),
@@ -194,6 +195,7 @@ class ConnectorRegistryV0ConnectorRegistryDestinationDefinition(BaseModel):
         str | None, Field(description="The language the connector is written in")
     ] = None
 
+
 class ConnectorRegistryV0ConnectorRegistryDestinationDefinition1(BaseModel):
     """
     describes a destination
@@ -218,9 +220,7 @@ class ConnectorRegistryV0ConnectorRegistryDestinationDefinition1(BaseModel):
     ] = False
     public: Annotated[
         bool | None,
-        Field(
-            description="true if this connector definition is available to all workspaces"
-        ),
+        Field(description="true if this connector definition is available to all workspaces"),
     ] = False
     custom: Annotated[
         bool | None, Field(description="whether this is a custom connector definition")
@@ -229,9 +229,7 @@ class ConnectorRegistryV0ConnectorRegistryDestinationDefinition1(BaseModel):
     supportLevel: SupportLevel | None = None
     releaseDate: Annotated[
         date | None,
-        Field(
-            description="The date when this connector was first released, in yyyy-mm-dd format."
-        ),
+        Field(description="The date when this connector was first released, in yyyy-mm-dd format."),
     ] = None
     tags: Annotated[
         list[str] | None,
@@ -239,9 +237,7 @@ class ConnectorRegistryV0ConnectorRegistryDestinationDefinition1(BaseModel):
             description="An array of tags that describe the connector. E.g: language:python, keyword:rds, etc."
         ),
     ] = None
-    resourceRequirements: (
-        ConnectorRegistryV0ActorDefinitionResourceRequirements | None
-    ) = None
+    resourceRequirements: ConnectorRegistryV0ActorDefinitionResourceRequirements | None = None
     protocolVersion: Annotated[
         str | None,
         Field(description="the Airbyte Protocol version supported by the connector"),
@@ -332,6 +328,7 @@ class ConnectorRegistryV0ConnectorRegistryDestinationDefinitionNormalizationDest
         ),
     ]
 
+
 class ConnectorRegistryV0ConnectorRegistryReleases(BaseModel):
     """
     Contains information about different types of releases for a connector.
@@ -361,6 +358,7 @@ class ConnectorRegistryV0ConnectorRegistryReleases(BaseModel):
             description="URL to documentation on how to migrate from the previous version to the current version. Defaults to ${documentationUrl}-migrations"
         ),
     ] = None
+
 
 class ConnectorRegistryV0ConnectorRegistryReleasesRolloutConfiguration(BaseModel):
     """
@@ -398,6 +396,7 @@ class ConnectorRegistryV0ConnectorRegistryReleasesRolloutConfiguration(BaseModel
         ),
     ] = 10
 
+
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition(BaseModel):
     """
     describes a source
@@ -413,9 +412,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition(BaseModel):
     documentationUrl: str
     icon: str | None = None
     iconUrl: str | None = None
-    sourceType: (
-        ConnectorRegistryV0ConnectorRegistrySourceDefinitionSourceType | None
-    ) = None
+    sourceType: ConnectorRegistryV0ConnectorRegistrySourceDefinitionSourceType | None = None
     spec: dict[str, Any]
     tombstone: Annotated[
         bool | None,
@@ -425,9 +422,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition(BaseModel):
     ] = False
     public: Annotated[
         bool | None,
-        Field(
-            description="true if this connector definition is available to all workspaces"
-        ),
+        Field(description="true if this connector definition is available to all workspaces"),
     ] = False
     custom: Annotated[
         bool | None, Field(description="whether this is a custom connector definition")
@@ -448,9 +443,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition(BaseModel):
     ] = None
     releaseDate: Annotated[
         date | None,
-        Field(
-            description="The date when this connector was first released, in yyyy-mm-dd format."
-        ),
+        Field(description="The date when this connector was first released, in yyyy-mm-dd format."),
     ] = None
     resourceRequirements: Annotated[
         ConnectorRegistryV0ConnectorRegistrySourceDefinitionActorDefinitionResourceRequirements
@@ -484,12 +477,11 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition(BaseModel):
             description="Number of seconds allowed between 2 airbyte protocol messages. The source will timeout if this delay is reach"
         ),
     ] = None
-    erdUrl: Annotated[
-        str | None, Field(description="The URL where you can visualize the ERD")
-    ] = None
+    erdUrl: Annotated[str | None, Field(description="The URL where you can visualize the ERD")] = (
+        None
+    )
     releases: Annotated[
-        ConnectorRegistryV0ConnectorRegistrySourceDefinitionConnectorRegistryReleases
-        | None,
+        ConnectorRegistryV0ConnectorRegistrySourceDefinitionConnectorRegistryReleases | None,
         Field(
             description="Contains information about different types of releases for a connector.",
             title="ConnectorRegistryReleases",
@@ -519,6 +511,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition(BaseModel):
     supportsFileTransfer: bool | None = False
     supportsDataActivation: bool | None = False
 
+
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1(BaseModel):
     """
     describes a source
@@ -534,9 +527,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1(BaseModel):
     documentationUrl: str
     icon: str | None = None
     iconUrl: str | None = None
-    sourceType: (
-        ConnectorRegistryV0ConnectorRegistrySourceDefinition1SourceType | None
-    ) = None
+    sourceType: ConnectorRegistryV0ConnectorRegistrySourceDefinition1SourceType | None = None
     spec: dict[str, Any]
     tombstone: Annotated[
         bool | None,
@@ -546,9 +537,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1(BaseModel):
     ] = False
     public: Annotated[
         bool | None,
-        Field(
-            description="true if this connector definition is available to all workspaces"
-        ),
+        Field(description="true if this connector definition is available to all workspaces"),
     ] = False
     custom: Annotated[
         bool | None, Field(description="whether this is a custom connector definition")
@@ -569,9 +558,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1(BaseModel):
     ] = None
     releaseDate: Annotated[
         date | None,
-        Field(
-            description="The date when this connector was first released, in yyyy-mm-dd format."
-        ),
+        Field(description="The date when this connector was first released, in yyyy-mm-dd format."),
     ] = None
     resourceRequirements: Annotated[
         ConnectorRegistryV0ConnectorRegistrySourceDefinition1ActorDefinitionResourceRequirements
@@ -605,12 +592,11 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1(BaseModel):
             description="Number of seconds allowed between 2 airbyte protocol messages. The source will timeout if this delay is reach"
         ),
     ] = None
-    erdUrl: Annotated[
-        str | None, Field(description="The URL where you can visualize the ERD")
-    ] = None
+    erdUrl: Annotated[str | None, Field(description="The URL where you can visualize the ERD")] = (
+        None
+    )
     releases: Annotated[
-        ConnectorRegistryV0ConnectorRegistrySourceDefinition1ConnectorRegistryReleases
-        | None,
+        ConnectorRegistryV0ConnectorRegistrySourceDefinition1ConnectorRegistryReleases | None,
         Field(
             description="Contains information about different types of releases for a connector.",
             title="ConnectorRegistryReleases",
@@ -628,8 +614,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1(BaseModel):
         ),
     ] = None
     packageInfo: Annotated[
-        ConnectorRegistryV0ConnectorRegistrySourceDefinition1ConnectorPackageInfo
-        | None,
+        ConnectorRegistryV0ConnectorRegistrySourceDefinition1ConnectorPackageInfo | None,
         Field(
             description="Information about the contents of the connector image",
             title="ConnectorPackageInfo",
@@ -660,6 +645,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1ActorDefinitionResour
     ] = None
     jobSpecific: list[JobTypeResourceLimit] | None = None
 
+
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1AirbyteInternal(BaseModel):
     """
     Fields for internal use only
@@ -668,12 +654,8 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1AirbyteInternal(BaseM
     model_config = ConfigDict(
         extra="allow",
     )
-    sl: (
-        ConnectorRegistryV0ConnectorRegistrySourceDefinition1AirbyteInternalSl | None
-    ) = None
-    ql: (
-        ConnectorRegistryV0ConnectorRegistrySourceDefinition1AirbyteInternalQl | None
-    ) = None
+    sl: ConnectorRegistryV0ConnectorRegistrySourceDefinition1AirbyteInternalSl | None = None
+    ql: ConnectorRegistryV0ConnectorRegistrySourceDefinition1AirbyteInternalQl | None = None
     isEnterprise: bool | None = False
     requireVersionIncrementsInPullRequests: Annotated[
         bool | None,
@@ -681,6 +663,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1AirbyteInternal(BaseM
             description="When false, version increment checks will be skipped for this connector"
         ),
     ] = True
+
 
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1AirbyteInternalQl(Enum):
     integer_0 = 0
@@ -691,11 +674,13 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1AirbyteInternalQl(Enu
     integer_500 = 500
     integer_600 = 600
 
+
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1AirbyteInternalSl(Enum):
     integer_0 = 0
     integer_100 = 100
     integer_200 = 200
     integer_300 = 300
+
 
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1AllowedHosts(BaseModel):
     """
@@ -713,9 +698,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1AllowedHosts(BaseMode
     ] = None
 
 
-class ConnectorRegistryV0ConnectorRegistrySourceDefinition1ConnectorPackageInfo(
-    BaseModel
-):
+class ConnectorRegistryV0ConnectorRegistrySourceDefinition1ConnectorPackageInfo(BaseModel):
     """
     Information about the contents of the connector image
     """
@@ -723,9 +706,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1ConnectorPackageInfo(
     cdk_version: str | None = None
 
 
-class ConnectorRegistryV0ConnectorRegistrySourceDefinition1ConnectorRegistryReleases(
-    BaseModel
-):
+class ConnectorRegistryV0ConnectorRegistrySourceDefinition1ConnectorRegistryReleases(BaseModel):
     """
     Contains information about different types of releases for a connector.
     """
@@ -795,30 +776,28 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1ConnectorRegistryRele
         ),
     ] = 10
 
+
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFields(BaseModel):
     """
     Optional schema for fields generated at metadata upload time
     """
 
     git: Annotated[
-        ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFieldsGitInfo
-        | None,
+        ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFieldsGitInfo | None,
         Field(
             description="Information about the author of the last commit that modified this file. DO NOT DEFINE THIS FIELD MANUALLY. It will be overwritten by the CI.",
             title="GitInfo",
         ),
     ] = None
     source_file_info: Annotated[
-        ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFieldsSourceFileInfo
-        | None,
+        ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFieldsSourceFileInfo | None,
         Field(
             description="Information about the source file that generated the registry entry",
             title="SourceFileInfo",
         ),
     ] = None
     metrics: Annotated[
-        ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFieldsConnectorMetrics
-        | None,
+        ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFieldsConnectorMetrics | None,
         Field(
             description="Information about the source file that generated the registry entry",
             title="ConnectorMetrics",
@@ -839,9 +818,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFieldsConnec
     oss: Any | None = None
 
 
-class ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFieldsGitInfo(
-    BaseModel
-):
+class ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFieldsGitInfo(BaseModel):
     """
     Information about the author of the last commit that modified this file. DO NOT DEFINE THIS FIELD MANUALLY. It will be overwritten by the CI.
     """
@@ -851,21 +828,15 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFieldsGitInf
     )
     commit_sha: Annotated[
         str | None,
-        Field(
-            description="The git commit sha of the last commit that modified this file."
-        ),
+        Field(description="The git commit sha of the last commit that modified this file."),
     ] = None
     commit_timestamp: Annotated[
         AwareDatetime | None,
-        Field(
-            description="The git commit timestamp of the last commit that modified this file."
-        ),
+        Field(description="The git commit timestamp of the last commit that modified this file."),
     ] = None
     commit_author: Annotated[
         str | None,
-        Field(
-            description="The git commit author of the last commit that modified this file."
-        ),
+        Field(description="The git commit author of the last commit that modified this file."),
     ] = None
     commit_author_email: Annotated[
         str | None,
@@ -875,9 +846,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFieldsGitInf
     ] = None
 
 
-class ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFieldsSourceFileInfo(
-    BaseModel
-):
+class ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFieldsSourceFileInfo(BaseModel):
     """
     Information about the source file that generated the registry entry
     """
@@ -887,6 +856,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1GeneratedFieldsSource
     metadata_bucket_name: str | None = None
     metadata_last_modified: str | None = None
     registry_entry_generated_at: str | None = None
+
 
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1ReleaseStage(Enum):
     """
@@ -898,11 +868,13 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1ReleaseStage(Enum):
     generally_available = "generally_available"
     custom = "custom"
 
+
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1SourceType(Enum):
     api = "api"
     file = "file"
     database = "database"
     custom = "custom"
+
 
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1SuggestedStreams(BaseModel):
     """
@@ -918,6 +890,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinition1SuggestedStreams(Base
             description="An array of streams that this connector suggests the average user will want.  SuggestedStreams not being present for the source means that all streams are suggested.  An empty list here means that no streams are suggested."
         ),
     ] = None
+
 
 class ConnectorRegistryV0ConnectorRegistrySourceDefinition1SupportLevel(Enum):
     """
@@ -947,6 +920,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionActorDefinitionResourc
     ] = None
     jobSpecific: list[JobTypeResourceLimit] | None = None
 
+
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionAirbyteInternal(BaseModel):
     """
     Fields for internal use only
@@ -955,12 +929,8 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionAirbyteInternal(BaseMo
     model_config = ConfigDict(
         extra="allow",
     )
-    sl: ConnectorRegistryV0ConnectorRegistrySourceDefinitionAirbyteInternalSl | None = (
-        None
-    )
-    ql: ConnectorRegistryV0ConnectorRegistrySourceDefinitionAirbyteInternalQl | None = (
-        None
-    )
+    sl: ConnectorRegistryV0ConnectorRegistrySourceDefinitionAirbyteInternalSl | None = None
+    ql: ConnectorRegistryV0ConnectorRegistrySourceDefinitionAirbyteInternalQl | None = None
     isEnterprise: bool | None = False
     requireVersionIncrementsInPullRequests: Annotated[
         bool | None,
@@ -968,6 +938,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionAirbyteInternal(BaseMo
             description="When false, version increment checks will be skipped for this connector"
         ),
     ] = True
+
 
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionAirbyteInternalQl(Enum):
     integer_0 = 0
@@ -978,11 +949,13 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionAirbyteInternalQl(Enum
     integer_500 = 500
     integer_600 = 600
 
+
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionAirbyteInternalSl(Enum):
     integer_0 = 0
     integer_100 = 100
     integer_200 = 200
     integer_300 = 300
+
 
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionAllowedHosts(BaseModel):
     """
@@ -1000,9 +973,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionAllowedHosts(BaseModel
     ] = None
 
 
-class ConnectorRegistryV0ConnectorRegistrySourceDefinitionConnectorPackageInfo(
-    BaseModel
-):
+class ConnectorRegistryV0ConnectorRegistrySourceDefinitionConnectorPackageInfo(BaseModel):
     """
     Information about the contents of the connector image
     """
@@ -1010,9 +981,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionConnectorPackageInfo(
     cdk_version: str | None = None
 
 
-class ConnectorRegistryV0ConnectorRegistrySourceDefinitionConnectorRegistryReleases(
-    BaseModel
-):
+class ConnectorRegistryV0ConnectorRegistrySourceDefinitionConnectorRegistryReleases(BaseModel):
     """
     Contains information about different types of releases for a connector.
     """
@@ -1082,30 +1051,28 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionConnectorRegistryRelea
         ),
     ] = 10
 
+
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFields(BaseModel):
     """
     Optional schema for fields generated at metadata upload time
     """
 
     git: Annotated[
-        ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFieldsGitInfo
-        | None,
+        ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFieldsGitInfo | None,
         Field(
             description="Information about the author of the last commit that modified this file. DO NOT DEFINE THIS FIELD MANUALLY. It will be overwritten by the CI.",
             title="GitInfo",
         ),
     ] = None
     source_file_info: Annotated[
-        ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFieldsSourceFileInfo
-        | None,
+        ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFieldsSourceFileInfo | None,
         Field(
             description="Information about the source file that generated the registry entry",
             title="SourceFileInfo",
         ),
     ] = None
     metrics: Annotated[
-        ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFieldsConnectorMetrics
-        | None,
+        ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFieldsConnectorMetrics | None,
         Field(
             description="Information about the source file that generated the registry entry",
             title="ConnectorMetrics",
@@ -1126,9 +1093,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFieldsConnect
     oss: Any | None = None
 
 
-class ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFieldsGitInfo(
-    BaseModel
-):
+class ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFieldsGitInfo(BaseModel):
     """
     Information about the author of the last commit that modified this file. DO NOT DEFINE THIS FIELD MANUALLY. It will be overwritten by the CI.
     """
@@ -1138,21 +1103,15 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFieldsGitInfo
     )
     commit_sha: Annotated[
         str | None,
-        Field(
-            description="The git commit sha of the last commit that modified this file."
-        ),
+        Field(description="The git commit sha of the last commit that modified this file."),
     ] = None
     commit_timestamp: Annotated[
         AwareDatetime | None,
-        Field(
-            description="The git commit timestamp of the last commit that modified this file."
-        ),
+        Field(description="The git commit timestamp of the last commit that modified this file."),
     ] = None
     commit_author: Annotated[
         str | None,
-        Field(
-            description="The git commit author of the last commit that modified this file."
-        ),
+        Field(description="The git commit author of the last commit that modified this file."),
     ] = None
     commit_author_email: Annotated[
         str | None,
@@ -1162,9 +1121,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFieldsGitInfo
     ] = None
 
 
-class ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFieldsSourceFileInfo(
-    BaseModel
-):
+class ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFieldsSourceFileInfo(BaseModel):
     """
     Information about the source file that generated the registry entry
     """
@@ -1174,6 +1131,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionGeneratedFieldsSourceF
     metadata_bucket_name: str | None = None
     metadata_last_modified: str | None = None
     registry_entry_generated_at: str | None = None
+
 
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionReleaseStage(Enum):
     """
@@ -1185,11 +1143,13 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionReleaseStage(Enum):
     generally_available = "generally_available"
     custom = "custom"
 
+
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionSourceType(Enum):
     api = "api"
     file = "file"
     database = "database"
     custom = "custom"
+
 
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionSuggestedStreams(BaseModel):
     """
@@ -1206,6 +1166,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionSuggestedStreams(BaseM
         ),
     ] = None
 
+
 class ConnectorRegistryV0ConnectorRegistrySourceDefinitionSupportLevel(Enum):
     """
     enum that describes a connector's release stage
@@ -1214,6 +1175,7 @@ class ConnectorRegistryV0ConnectorRegistrySourceDefinitionSupportLevel(Enum):
     community = "community"
     certified = "certified"
     archived = "archived"
+
 
 class ConnectorRegistryV0GeneratedFields(BaseModel):
     """
@@ -1243,6 +1205,7 @@ class ConnectorRegistryV0GeneratedFields(BaseModel):
     ] = None
     sbomUrl: Annotated[str | None, Field(description="URL to the SBOM file")] = None
 
+
 class ConnectorRegistryV0GeneratedFieldsConnectorMetrics(BaseModel):
     """
     Information about the source file that generated the registry entry
@@ -1251,6 +1214,7 @@ class ConnectorRegistryV0GeneratedFieldsConnectorMetrics(BaseModel):
     all: Any | None = None
     cloud: Any | None = None
     oss: Any | None = None
+
 
 class ConnectorRegistryV0GeneratedFieldsGitInfo(BaseModel):
     """
@@ -1262,21 +1226,15 @@ class ConnectorRegistryV0GeneratedFieldsGitInfo(BaseModel):
     )
     commit_sha: Annotated[
         str | None,
-        Field(
-            description="The git commit sha of the last commit that modified this file."
-        ),
+        Field(description="The git commit sha of the last commit that modified this file."),
     ] = None
     commit_timestamp: Annotated[
         AwareDatetime | None,
-        Field(
-            description="The git commit timestamp of the last commit that modified this file."
-        ),
+        Field(description="The git commit timestamp of the last commit that modified this file."),
     ] = None
     commit_author: Annotated[
         str | None,
-        Field(
-            description="The git commit author of the last commit that modified this file."
-        ),
+        Field(description="The git commit author of the last commit that modified this file."),
     ] = None
     commit_author_email: Annotated[
         str | None,
@@ -1284,6 +1242,7 @@ class ConnectorRegistryV0GeneratedFieldsGitInfo(BaseModel):
             description="The git commit author email of the last commit that modified this file."
         ),
     ] = None
+
 
 class ConnectorRegistryV0GeneratedFieldsSourceFileInfo(BaseModel):
     """
@@ -1296,13 +1255,13 @@ class ConnectorRegistryV0GeneratedFieldsSourceFileInfo(BaseModel):
     metadata_last_modified: str | None = None
     registry_entry_generated_at: str | None = None
 
+
 class ConnectorReleaseCandidates(RootModel[dict[str, VersionReleaseCandidate]]):
     root: Annotated[
         dict[str, VersionReleaseCandidate],
-        Field(
-            description="Each entry denotes a release candidate version of a connector."
-        ),
+        Field(description="Each entry denotes a release candidate version of a connector."),
     ]
+
 
 class JobTypeResourceLimit(BaseModel):
     """
@@ -1327,6 +1286,7 @@ class JobTypeResourceLimit(BaseModel):
         ),
     ]
 
+
 class JobTypeResourceLimitJobType(Enum):
     """
     enum that describes the different types of jobs that the platform runs.
@@ -1339,6 +1299,7 @@ class JobTypeResourceLimitJobType(Enum):
     reset_connection = "reset_connection"
     connection_updater = "connection_updater"
     replicate = "replicate"
+
 
 class JobTypeResourceLimitResourceRequirements(BaseModel):
     """
@@ -1353,6 +1314,7 @@ class JobTypeResourceLimitResourceRequirements(BaseModel):
     memory_request: str | None = None
     memory_limit: str | None = None
 
+
 class ReleaseStage(Enum):
     """
     enum that describes a connector's release stage
@@ -1362,6 +1324,7 @@ class ReleaseStage(Enum):
     beta = "beta"
     generally_available = "generally_available"
     custom = "custom"
+
 
 class ResourceRequirements(BaseModel):
     """
@@ -1376,6 +1339,7 @@ class ResourceRequirements(BaseModel):
     memory_request: str | None = None
     memory_limit: str | None = None
 
+
 class SupportLevel(Enum):
     """
     enum that describes a connector's release stage
@@ -1384,6 +1348,7 @@ class SupportLevel(Enum):
     community = "community"
     certified = "certified"
     archived = "archived"
+
 
 class VersionBreakingChange(BaseModel):
     """
@@ -1399,9 +1364,7 @@ class VersionBreakingChange(BaseModel):
             description="The deadline by which to upgrade before the breaking change takes effect."
         ),
     ]
-    message: Annotated[
-        str, Field(description="Descriptive message detailing the breaking change.")
-    ]
+    message: Annotated[str, Field(description="Descriptive message detailing the breaking change.")]
     deadlineAction: Annotated[
         VersionBreakingChangeDeadlineAction | None,
         Field(description="Action to do when the deadline is reached."),
@@ -1419,6 +1382,7 @@ class VersionBreakingChange(BaseModel):
             min_length=1,
         ),
     ] = None
+
 
 class VersionBreakingChangeDeadlineAction(Enum):
     """
@@ -1438,9 +1402,7 @@ class VersionReleaseCandidate(
     root: Annotated[
         ConnectorRegistryV0ConnectorRegistrySourceDefinition1
         | ConnectorRegistryV0ConnectorRegistryDestinationDefinition1,
-        Field(
-            description="Contains information about a release candidate version of a connector."
-        ),
+        Field(description="Contains information about a release candidate version of a connector."),
     ]
 
 
