@@ -56,8 +56,7 @@ class BaseRecordModel(BaseModel):
         Raises:
             KeyError: If the key doesn't exist in fields or extras
         """
-        # pyrefly: ignore [deprecated]
-        if key in self.model_fields:
+        if key in type(self).model_fields:
             return getattr(self, key)
 
         extra = self.__pydantic_extra__
@@ -93,8 +92,7 @@ class BaseRecordModel(BaseModel):
         if not isinstance(key, str):
             return False
 
-        # pyrefly: ignore [deprecated]
-        if key in self.model_fields:
+        if key in type(self).model_fields:
             return True
 
         extra = self.__pydantic_extra__
@@ -106,8 +104,7 @@ class BaseRecordModel(BaseModel):
         Returns:
             List of all field and extra property names
         """
-        # pyrefly: ignore [deprecated]
-        base = list(self.model_fields.keys())
+        base = list(type(self).model_fields.keys())
         extra = list((self.__pydantic_extra__ or {}).keys())
         return base + extra
 
@@ -117,8 +114,7 @@ class BaseRecordModel(BaseModel):
         Returns:
             List of (key, value) tuples for all fields and extras
         """
-        # pyrefly: ignore [deprecated]
-        result = [(k, getattr(self, k)) for k in self.model_fields]
+        result = [(k, getattr(self, k)) for k in type(self).model_fields]
         extra = self.__pydantic_extra__
         if extra:
             result.extend(extra.items())
@@ -130,8 +126,7 @@ class BaseRecordModel(BaseModel):
         Returns:
             List of all field and extra property values
         """
-        # pyrefly: ignore [deprecated]
-        result = [getattr(self, k) for k in self.model_fields]
+        result = [getattr(self, k) for k in type(self).model_fields]
         extra = self.__pydantic_extra__
         if extra:
             result.extend(extra.values())
