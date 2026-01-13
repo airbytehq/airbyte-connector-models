@@ -29,7 +29,7 @@ jobs:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
       contents: write  # Needed to upload artifacts to the release
     environment:
-      name: PyPI
+      name: pypi
       url: https://pypi.org/project/airbyte-connector-models/
     # Only publish on release events (when draft releases are published)
     if: github.event_name == 'release' && github.event.action == 'published'
