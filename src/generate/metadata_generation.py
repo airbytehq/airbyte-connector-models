@@ -113,15 +113,32 @@ def _fix_forward_references(file_path: Path) -> None:
     logger.info(f"Fixing forward references in {file_path}")
     sorted_classes = _topological_sort(classes, dependencies)
 
+    # Build reverse dependency map: which classes depend on each class
+    dependents: dict[str, set[str]] = {name: set() for name in classes}
+    for class_name, deps in dependencies.items():
+        for dep in deps:
+            dependents[dep].add(class_name)
+
+    # Find classes that were moved earlier due to dependencies
+    original_order = list(classes.keys())
+    moved_classes: dict[str, set[str]] = {}
+    for i, class_name in enumerate(sorted_classes):
+        original_idx = original_order.index(class_name)
+        if original_idx > i and dependents[class_name]:
+            moved_classes[class_name] = dependents[class_name]
+
     first_class_start = min(info[0] for info in classes.values())
     header = "\n".join(lines[:first_class_start])
 
-    # Add a comment indicating class ordering is significant
-    ordering_comment = (
-        "# NOTE: Class ordering is significant. Classes are sorted by dependency order\n"
-        "# to avoid forward reference errors. Do not reorder manually.\n\n"
-    )
-    new_content = header + ordering_comment + "".join(classes[name][2] for name in sorted_classes)
+    # Build new content with targeted comments on moved classes
+    new_content = header
+    for class_name in sorted_classes:
+        class_text = classes[class_name][2]
+        if class_name in moved_classes:
+            deps_list = ", ".join(sorted(moved_classes[class_name]))
+            comment = f"# Defined above {deps_list} which depends on it.\n"
+            new_content += comment
+        new_content += class_text
 
     file_path.write_text(new_content)
     logger.info(f"Reordered {len(sorted_classes)} classes in {file_path}")
