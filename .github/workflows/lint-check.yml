@@ -34,7 +34,7 @@ jobs:
         run: uv run ruff check .
 
   type-check:
-    name: Type Check
+    name: Python Type Checking
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
