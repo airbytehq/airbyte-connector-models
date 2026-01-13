@@ -77,3 +77,9 @@ ignore = [
 [format]
 quote-style = "double"
 indent-style = "space"
+# Exclude generated model files from format checking - these are auto-generated
+# from JSON schemas and may have formatting that differs from ruff's preferences
+exclude = [
+    "models/connectors/**/*.py",
+    "models/metadata/**/*.py",
+]
