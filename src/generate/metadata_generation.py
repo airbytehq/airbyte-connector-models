@@ -151,13 +151,13 @@ def generate_metadata_models() -> None:
     """Generate Pydantic models from metadata schemas.
 
     Reads all YAML schemas from src/metadata/v0/ and generates
-    corresponding Pydantic models in models/metadata/v0/.
+    corresponding Pydantic models in airbyte_connector_models/metadata/v0/.
     """
     logger.info("Generating metadata models")
 
     repo_root = get_repo_root()
     schema_dir = repo_root / "src" / "metadata" / "v0"
-    output_dir = repo_root / "models" / "metadata" / "v0"
+    output_dir = repo_root / "airbyte_connector_models" / "metadata" / "v0"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     header_path = repo_root / ".header.txt"
@@ -248,8 +248,8 @@ def generate_consolidated_metadata_model() -> None:
     logger.info("Generating consolidated metadata model from bundled JSON")
 
     repo_root = get_repo_root()
-    bundled_json = repo_root / "models" / "metadata" / "v0" / "ConnectorMetadataDefinitionV0.json"
-    output_file = repo_root / "models" / "metadata" / "v0" / "connector_metadata_definition_v0.py"
+    bundled_json = repo_root / "airbyte_connector_models" / "metadata" / "v0" / "ConnectorMetadataDefinitionV0.json"
+    output_file = repo_root / "airbyte_connector_models" / "metadata" / "v0" / "connector_metadata_definition_v0.py"
 
     _generate_consolidated_model(bundled_json, output_file, "ConnectorMetadataDefinitionV0")
 
@@ -263,8 +263,8 @@ def generate_consolidated_registry_model() -> None:
     logger.info("Generating consolidated registry model from bundled JSON")
 
     repo_root = get_repo_root()
-    bundled_json = repo_root / "models" / "metadata" / "v0" / "ConnectorRegistryV0.json"
-    output_file = repo_root / "models" / "metadata" / "v0" / "connector_registry_v0.py"
+    bundled_json = repo_root / "airbyte_connector_models" / "metadata" / "v0" / "ConnectorRegistryV0.json"
+    output_file = repo_root / "airbyte_connector_models" / "metadata" / "v0" / "connector_registry_v0.py"
 
     _generate_consolidated_model(bundled_json, output_file, "ConnectorRegistryV0")
 
