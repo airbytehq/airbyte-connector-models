@@ -1,6 +1,6 @@
 [project]
 name = "airbyte-connector-models"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Typed Pydantic models for Airbyte connectors"
 readme = "README.md"
 requires-python = ">=3.10,<3.13"
@@ -23,14 +23,22 @@ Repository = "https://github.com/airbytehq/airbyte-connector-models"
 dev = [
     "pytest (>=8.2.0,<9.0)",
     "ruff (>=0.8.2,<1.0)",
-    "basedpyright (>=1.0.0,<2.0)",
+    "pyrefly (>=0.42.0)",
     "datamodel-code-generator (>=0.25.0,<1.0)",
     "poethepoet (>=0.26.1,<1.0)",
 ]
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "uv-dynamic-versioning"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[tool.uv-dynamic-versioning]
+vcs = "git"
+style = "pep440"
+fallback-version = "0.0.0"
 
 [tool.hatch.build.targets.wheel]
 packages = ["models"]
