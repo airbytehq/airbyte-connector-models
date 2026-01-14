@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-MODELS_DIR = Path(__file__).parent.parent / "models"
+MODELS_DIR = Path(__file__).parent.parent / "airbyte_connector_models"
 
 
 @pytest.mark.parametrize(

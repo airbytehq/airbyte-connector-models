@@ -3,7 +3,7 @@
 
 from pydantic import BaseModel
 
-from models import BaseRecordModel
+from airbyte_connector_models import BaseRecordModel
 
 
 def test_base_record_model_import() -> None:

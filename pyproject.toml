@@ -41,7 +41,7 @@ style = "pep440"
 fallback-version = "0.0.0"
 
 [tool.hatch.build.targets.wheel]
-packages = ["models"]
+packages = ["airbyte_connector_models"]
 
 [tool.poe]
 include = "poe_tasks.toml"
