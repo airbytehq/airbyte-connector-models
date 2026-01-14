@@ -85,7 +85,6 @@ wheels = [
 
 [[package]]
 name = "airbyte-connector-models"
-version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "airbyte-api" },

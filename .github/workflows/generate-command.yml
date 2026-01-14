@@ -76,13 +76,13 @@ jobs:
             return pr.head.ref;
       
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ inputs.trigger == 'slash' && steps.get-pr-branch.outputs.result || github.ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Checkout Airbyte monorepo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: airbytehq/airbyte
           path: airbyte-monorepo
@@ -124,7 +124,7 @@ jobs:
       - name: Create or update pull request (nightly mode)
         if: inputs.trigger == 'nightly' && steps.check_changes.outputs.has_changes == 'true'
         id: create_pr
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore: regenerate connector models"
