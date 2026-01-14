@@ -248,8 +248,20 @@ def generate_consolidated_metadata_model() -> None:
     logger.info("Generating consolidated metadata model from bundled JSON")
 
     repo_root = get_repo_root()
-    bundled_json = repo_root / "airbyte_connector_models" / "metadata" / "v0" / "ConnectorMetadataDefinitionV0.json"
-    output_file = repo_root / "airbyte_connector_models" / "metadata" / "v0" / "connector_metadata_definition_v0.py"
+    bundled_json = (
+        repo_root
+        / "airbyte_connector_models"
+        / "metadata"
+        / "v0"
+        / "ConnectorMetadataDefinitionV0.json"
+    )
+    output_file = (
+        repo_root
+        / "airbyte_connector_models"
+        / "metadata"
+        / "v0"
+        / "connector_metadata_definition_v0.py"
+    )
 
     _generate_consolidated_model(bundled_json, output_file, "ConnectorMetadataDefinitionV0")
 
@@ -263,8 +275,12 @@ def generate_consolidated_registry_model() -> None:
     logger.info("Generating consolidated registry model from bundled JSON")
 
     repo_root = get_repo_root()
-    bundled_json = repo_root / "airbyte_connector_models" / "metadata" / "v0" / "ConnectorRegistryV0.json"
-    output_file = repo_root / "airbyte_connector_models" / "metadata" / "v0" / "connector_registry_v0.py"
+    bundled_json = (
+        repo_root / "airbyte_connector_models" / "metadata" / "v0" / "ConnectorRegistryV0.json"
+    )
+    output_file = (
+        repo_root / "airbyte_connector_models" / "metadata" / "v0" / "connector_registry_v0.py"
+    )
 
     _generate_consolidated_model(bundled_json, output_file, "ConnectorRegistryV0")
 
