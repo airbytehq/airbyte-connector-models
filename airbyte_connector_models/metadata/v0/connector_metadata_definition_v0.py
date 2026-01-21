@@ -49,9 +49,7 @@ class StreamBreakingChangeScope(BaseModel):
 class BreakingChangeScope(RootModel[StreamBreakingChangeScope]):
     root: Annotated[
         StreamBreakingChangeScope,
-        Field(
-            description="A scope that can be used to limit the impact of a breaking change."
-        ),
+        Field(description="A scope that can be used to limit the impact of a breaking change."),
     ]
 
 
@@ -123,17 +121,15 @@ class ConnectorMetadataDefinitionV0Data(BaseModel):
     ] = None
     releaseDate: Annotated[
         date | None,
-        Field(
-            description="The date when this connector was first released, in yyyy-mm-dd format."
-        ),
+        Field(description="The date when this connector was first released, in yyyy-mm-dd format."),
     ] = None
     protocolVersion: Annotated[
         str | None,
         Field(description="the Airbyte Protocol version supported by the connector"),
     ] = None
-    erdUrl: Annotated[
-        str | None, Field(description="The URL where you can visualize the ERD")
-    ] = None
+    erdUrl: Annotated[str | None, Field(description="The URL where you can visualize the ERD")] = (
+        None
+    )
     connectorSubtype: ConnectorMetadataDefinitionV0DataConnectorSubtype
     releaseStage: Annotated[
         ConnectorMetadataDefinitionV0DataReleaseStage,
@@ -171,8 +167,7 @@ class ConnectorMetadataDefinitionV0Data(BaseModel):
         ),
     ] = None
     normalizationConfig: Annotated[
-        ConnectorMetadataDefinitionV0DataNormalizationDestinationDefinitionConfig
-        | None,
+        ConnectorMetadataDefinitionV0DataNormalizationDestinationDefinitionConfig | None,
         Field(
             description="describes a normalization config for destination definition",
             title="NormalizationDestinationDefinitionConfig",
@@ -327,9 +322,7 @@ class ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannelSupportedSe
     FLATBUFFERS = "FLATBUFFERS"
 
 
-class ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannelSupportedTransportEnum(
-    Enum
-):
+class ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannelSupportedTransportEnum(Enum):
     STDIO = "STDIO"
     SOCKET = "SOCKET"
 
@@ -429,11 +422,8 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptions(BaseModel):
         Field(description="List of secrets required to run the test suite"),
     ] = None
     testConnections: Annotated[
-        list[ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsTestConnections]
-        | None,
-        Field(
-            description="List of sandbox cloud connections that tests can be run against"
-        ),
+        list[ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsTestConnections] | None,
+        Field(description="List of sandbox cloud connections that tests can be run against"),
     ] = None
 
 
@@ -448,9 +438,7 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecret(BaseModel
     name: Annotated[str, Field(description="The secret name in the secret store")]
     fileName: Annotated[
         str | None,
-        Field(
-            description="The name of the file to which the secret value would be persisted"
-        ),
+        Field(description="The name of the file to which the secret value would be persisted"),
     ] = None
     secretStore: Annotated[
         ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStore,
@@ -461,9 +449,7 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecret(BaseModel
     ]
 
 
-class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStore(
-    BaseModel
-):
+class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStore(BaseModel):
     """
     An object describing a secret store metadata
     """
@@ -478,15 +464,12 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStor
         ),
     ] = None
     type: Annotated[
-        ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStoreType
-        | None,
+        ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStoreType | None,
         Field(description="The type of the secret store"),
     ] = None
 
 
-class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStoreType(
-    Enum
-):
+class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStoreType(Enum):
     """
     The type of the secret store
     """
@@ -505,9 +488,7 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSuite(Enum):
     liveTests = "liveTests"
 
 
-class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsTestConnections(
-    BaseModel
-):
+class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsTestConnections(BaseModel):
     """
     List of sandbox cloud connections that tests can be run against
     """
@@ -609,21 +590,15 @@ class ConnectorMetadataDefinitionV0DataGeneratedFieldsGitInfo(BaseModel):
     )
     commit_sha: Annotated[
         str | None,
-        Field(
-            description="The git commit sha of the last commit that modified this file."
-        ),
+        Field(description="The git commit sha of the last commit that modified this file."),
     ] = None
     commit_timestamp: Annotated[
         AwareDatetime | None,
-        Field(
-            description="The git commit timestamp of the last commit that modified this file."
-        ),
+        Field(description="The git commit timestamp of the last commit that modified this file."),
     ] = None
     commit_author: Annotated[
         str | None,
-        Field(
-            description="The git commit author of the last commit that modified this file."
-        ),
+        Field(description="The git commit author of the last commit that modified this file."),
     ] = None
     commit_author_email: Annotated[
         str | None,
@@ -645,9 +620,7 @@ class ConnectorMetadataDefinitionV0DataGeneratedFieldsSourceFileInfo(BaseModel):
     registry_entry_generated_at: str | None = None
 
 
-class ConnectorMetadataDefinitionV0DataNormalizationDestinationDefinitionConfig(
-    BaseModel
-):
+class ConnectorMetadataDefinitionV0DataNormalizationDestinationDefinitionConfig(BaseModel):
     """
     describes a normalization config for destination definition
     """
@@ -679,9 +652,7 @@ class ConnectorMetadataDefinitionV0DataRegistryOverrides(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    oss: ConnectorMetadataDefinitionV0DataRegistryOverridesRegistryOverrides | None = (
-        None
-    )
+    oss: ConnectorMetadataDefinitionV0DataRegistryOverridesRegistryOverrides | None = None
     cloud: ConnectorMetadataDefinitionV0RegistryOverrides | None = None
 
 
@@ -923,9 +894,7 @@ class VersionBreakingChange(BaseModel):
             description="The deadline by which to upgrade before the breaking change takes effect."
         ),
     ]
-    message: Annotated[
-        str, Field(description="Descriptive message detailing the breaking change.")
-    ]
+    message: Annotated[str, Field(description="Descriptive message detailing the breaking change.")]
     deadlineAction: Annotated[
         VersionBreakingChangeDeadlineAction | None,
         Field(description="Action to do when the deadline is reached."),
