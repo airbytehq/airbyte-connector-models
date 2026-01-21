@@ -513,9 +513,7 @@ class ConnectorMetadataDefinitionV0DataExternalDocumentationUrl(BaseModel):
     url: Annotated[AnyUrl, Field(description="URL to the external documentation")]
     type: Annotated[
         ConnectorMetadataDefinitionV0DataExternalDocumentationUrlType | None,
-        Field(
-            description="Category of documentation (api_release_history, api_reference, api_deprecations, or other)"
-        ),
+        Field(description="Category of documentation"),
     ] = None
     requiresLogin: Annotated[
         bool | None,
@@ -525,13 +523,22 @@ class ConnectorMetadataDefinitionV0DataExternalDocumentationUrl(BaseModel):
 
 class ConnectorMetadataDefinitionV0DataExternalDocumentationUrlType(Enum):
     """
-    Category of documentation (api_release_history, api_reference, api_deprecations, or other)
+    Category of documentation
     """
 
-    api_release_history = "api_release_history"
-    api_reference = "api_reference"
     api_deprecations = "api_deprecations"
+    api_reference = "api_reference"
+    api_release_history = "api_release_history"
+    authentication_guide = "authentication_guide"
+    data_model_reference = "data_model_reference"
+    developer_community = "developer_community"
+    migration_guide = "migration_guide"
+    openapi_spec = "openapi_spec"
     other = "other"
+    permissions_scopes = "permissions_scopes"
+    rate_limits = "rate_limits"
+    sql_reference = "sql_reference"
+    status_page = "status_page"
 
 
 class ConnectorMetadataDefinitionV0DataGeneratedFields(BaseModel):
