@@ -1,10 +1,9 @@
 # Copyright (c) 2025 Airbyte, Inc., all rights reserved.
 
-
 from __future__ import annotations
 
 from datetime import date
-from enum import Enum
+from enum import Enum, IntEnum
 from typing import Annotated, Any, Literal
 from uuid import UUID
 
@@ -25,32 +24,6 @@ class AllowedHosts(BaseModel):
             description="An array of hosts that this connector can connect to.  AllowedHosts not being present for the source or destination means that access to all hosts is allowed.  An empty list here means that no network access is granted."
         ),
     ] = None
-
-
-# Defined above BreakingChangeScope which depends on it.
-class StreamBreakingChangeScope(BaseModel):
-    """
-    A scope that can be used to limit the impact of a breaking change to specific streams.
-    """
-
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    scopeType: Literal["stream"]
-    impactedScopes: Annotated[
-        list[str],
-        Field(
-            description="List of streams that are impacted by the breaking change.",
-            min_length=1,
-        ),
-    ]
-
-
-class BreakingChangeScope(RootModel[StreamBreakingChangeScope]):
-    root: Annotated[
-        StreamBreakingChangeScope,
-        Field(description="A scope that can be used to limit the impact of a breaking change."),
-    ]
 
 
 class ConnectorMetadataDefinitionV0(BaseModel):
@@ -121,15 +94,17 @@ class ConnectorMetadataDefinitionV0Data(BaseModel):
     ] = None
     releaseDate: Annotated[
         date | None,
-        Field(description="The date when this connector was first released, in yyyy-mm-dd format."),
+        Field(
+            description="The date when this connector was first released, in yyyy-mm-dd format."
+        ),
     ] = None
     protocolVersion: Annotated[
         str | None,
         Field(description="the Airbyte Protocol version supported by the connector"),
     ] = None
-    erdUrl: Annotated[str | None, Field(description="The URL where you can visualize the ERD")] = (
-        None
-    )
+    erdUrl: Annotated[
+        str | None, Field(description="The URL where you can visualize the ERD")
+    ] = None
     connectorSubtype: ConnectorMetadataDefinitionV0DataConnectorSubtype
     releaseStage: Annotated[
         ConnectorMetadataDefinitionV0DataReleaseStage,
@@ -167,7 +142,8 @@ class ConnectorMetadataDefinitionV0Data(BaseModel):
         ),
     ] = None
     normalizationConfig: Annotated[
-        ConnectorMetadataDefinitionV0DataNormalizationDestinationDefinitionConfig | None,
+        ConnectorMetadataDefinitionV0DataNormalizationDestinationDefinitionConfig
+        | None,
         Field(
             description="describes a normalization config for destination definition",
             title="NormalizationDestinationDefinitionConfig",
@@ -250,7 +226,7 @@ class ConnectorMetadataDefinitionV0DataAirbyteInternal(BaseModel):
     ] = True
 
 
-class ConnectorMetadataDefinitionV0DataAirbyteInternalQl(Enum):
+class ConnectorMetadataDefinitionV0DataAirbyteInternalQl(IntEnum):
     integer_0 = 0
     integer_100 = 100
     integer_200 = 200
@@ -260,7 +236,7 @@ class ConnectorMetadataDefinitionV0DataAirbyteInternalQl(Enum):
     integer_600 = 600
 
 
-class ConnectorMetadataDefinitionV0DataAirbyteInternalSl(Enum):
+class ConnectorMetadataDefinitionV0DataAirbyteInternalSl(IntEnum):
     integer_0 = 0
     integer_100 = 100
     integer_200 = 200
@@ -322,7 +298,9 @@ class ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannelSupportedSe
     FLATBUFFERS = "FLATBUFFERS"
 
 
-class ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannelSupportedTransportEnum(Enum):
+class ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannelSupportedTransportEnum(
+    Enum
+):
     STDIO = "STDIO"
     SOCKET = "SOCKET"
 
@@ -343,7 +321,8 @@ class ConnectorMetadataDefinitionV0DataConnectorReleases(BaseModel):
         ),
     ] = None
     breakingChanges: Annotated[
-        dict[str, VersionBreakingChange] | None,
+        ConnectorMetadataDefinitionV0DataConnectorReleasesConnectorBreakingChanges
+        | None,
         Field(
             description="Each entry denotes a breaking change in a specific version of a connector that requires user action to upgrade.",
             title="ConnectorBreakingChanges",
@@ -422,8 +401,20 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptions(BaseModel):
         Field(description="List of secrets required to run the test suite"),
     ] = None
     testConnections: Annotated[
-        list[ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsTestConnections] | None,
-        Field(description="List of sandbox cloud connections that tests can be run against"),
+        list[ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsTestConnections]
+        | None,
+        Field(
+            description="List of sandbox cloud connections that tests can be run against"
+        ),
+    ] = None
+    scenarios: Annotated[
+        list[
+            ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSmokeTestScenario
+        ]
+        | None,
+        Field(
+            description="List of smoke test scenarios (only applicable when suite is 'smokeTests')"
+        ),
     ] = None
 
 
@@ -438,7 +429,9 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecret(BaseModel
     name: Annotated[str, Field(description="The secret name in the secret store")]
     fileName: Annotated[
         str | None,
-        Field(description="The name of the file to which the secret value would be persisted"),
+        Field(
+            description="The name of the file to which the secret value would be persisted"
+        ),
     ] = None
     secretStore: Annotated[
         ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStore,
@@ -449,7 +442,9 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecret(BaseModel
     ]
 
 
-class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStore(BaseModel):
+class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStore(
+    BaseModel
+):
     """
     An object describing a secret store metadata
     """
@@ -464,17 +459,71 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStor
         ),
     ] = None
     type: Annotated[
-        ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStoreType | None,
+        ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStoreType
+        | None,
         Field(description="The type of the secret store"),
     ] = None
 
 
-class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStoreType(Enum):
+class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStoreType(
+    Enum
+):
     """
     The type of the secret store
     """
 
     GSM = "GSM"
+
+
+class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSmokeTestScenario(
+    BaseModel
+):
+    """
+    A single smoke test scenario configuration for a connector.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    name: Annotated[
+        str,
+        Field(
+            description="Name of the test scenario (e.g., 'default', 'invalid_config', 'oauth_config')"
+        ),
+    ]
+    config_file: Annotated[
+        str | None,
+        Field(description="Relative path to the config file to use for this scenario"),
+    ] = None
+    config_settings: Annotated[
+        dict[str, Any] | None,
+        Field(
+            description="Optional dictionary of config settings to override or supplement config_file settings"
+        ),
+    ] = None
+    expect_failure: Annotated[
+        bool | None, Field(description="Whether the scenario is expected to fail")
+    ] = False
+    only_streams: Annotated[
+        list[str] | None,
+        Field(
+            description="List of stream names to include in the scenario (if specified, only these streams will be tested)"
+        ),
+    ] = None
+    exclude_streams: Annotated[
+        list[str] | None,
+        Field(description="List of stream names to exclude from the scenario"),
+    ] = None
+    suggested_streams_only: Annotated[
+        bool | None,
+        Field(
+            description="Whether to limit testing to the connector's suggested streams list (from data.suggestedStreams)"
+        ),
+    ] = False
+    configured_catalog_path: Annotated[
+        str | None,
+        Field(description="Path to a pre-configured catalog file for the scenario"),
+    ] = None
 
 
 class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSuite(Enum):
@@ -486,9 +535,12 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSuite(Enum):
     integrationTests = "integrationTests"
     acceptanceTests = "acceptanceTests"
     liveTests = "liveTests"
+    smokeTests = "smokeTests"
 
 
-class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsTestConnections(BaseModel):
+class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsTestConnections(
+    BaseModel
+):
     """
     List of sandbox cloud connections that tests can be run against
     """
@@ -590,15 +642,21 @@ class ConnectorMetadataDefinitionV0DataGeneratedFieldsGitInfo(BaseModel):
     )
     commit_sha: Annotated[
         str | None,
-        Field(description="The git commit sha of the last commit that modified this file."),
+        Field(
+            description="The git commit sha of the last commit that modified this file."
+        ),
     ] = None
     commit_timestamp: Annotated[
         AwareDatetime | None,
-        Field(description="The git commit timestamp of the last commit that modified this file."),
+        Field(
+            description="The git commit timestamp of the last commit that modified this file."
+        ),
     ] = None
     commit_author: Annotated[
         str | None,
-        Field(description="The git commit author of the last commit that modified this file."),
+        Field(
+            description="The git commit author of the last commit that modified this file."
+        ),
     ] = None
     commit_author_email: Annotated[
         str | None,
@@ -620,7 +678,9 @@ class ConnectorMetadataDefinitionV0DataGeneratedFieldsSourceFileInfo(BaseModel):
     registry_entry_generated_at: str | None = None
 
 
-class ConnectorMetadataDefinitionV0DataNormalizationDestinationDefinitionConfig(BaseModel):
+class ConnectorMetadataDefinitionV0DataNormalizationDestinationDefinitionConfig(
+    BaseModel
+):
     """
     describes a normalization config for destination definition
     """
@@ -652,7 +712,9 @@ class ConnectorMetadataDefinitionV0DataRegistryOverrides(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    oss: ConnectorMetadataDefinitionV0DataRegistryOverridesRegistryOverrides | None = None
+    oss: ConnectorMetadataDefinitionV0DataRegistryOverridesRegistryOverrides | None = (
+        None
+    )
     cloud: ConnectorMetadataDefinitionV0RegistryOverrides | None = None
 
 
@@ -864,6 +926,33 @@ class ResourceRequirements(BaseModel):
     memory_limit: str | None = None
 
 
+class StreamBreakingChangeScope(BaseModel):
+    """
+    A scope that can be used to limit the impact of a breaking change to specific streams.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    scopeType: Literal["stream"]
+    impactedScopes: Annotated[
+        list[str],
+        Field(
+            description="List of streams that are impacted by the breaking change.",
+            min_length=1,
+        ),
+    ]
+
+
+class BreakingChangeScope(RootModel[StreamBreakingChangeScope]):
+    root: Annotated[
+        StreamBreakingChangeScope,
+        Field(
+            description="A scope that can be used to limit the impact of a breaking change."
+        ),
+    ]
+
+
 class SuggestedStreams(BaseModel):
     """
     A source's suggested streams.  These will be suggested by default for new connections using this source.  Otherwise, all streams will be selected.  This is useful for when your source has a lot of streams, but the average user will only want a subset of them synced.
@@ -894,7 +983,9 @@ class VersionBreakingChange(BaseModel):
             description="The deadline by which to upgrade before the breaking change takes effect."
         ),
     ]
-    message: Annotated[str, Field(description="Descriptive message detailing the breaking change.")]
+    message: Annotated[
+        str, Field(description="Descriptive message detailing the breaking change.")
+    ]
     deadlineAction: Annotated[
         VersionBreakingChangeDeadlineAction | None,
         Field(description="Action to do when the deadline is reached."),
@@ -912,6 +1003,18 @@ class VersionBreakingChange(BaseModel):
             min_length=1,
         ),
     ] = None
+
+
+class ConnectorMetadataDefinitionV0DataConnectorReleasesConnectorBreakingChanges(
+    RootModel[dict[str, VersionBreakingChange]]
+):
+    root: Annotated[
+        dict[str, VersionBreakingChange],
+        Field(
+            description="Each entry denotes a breaking change in a specific version of a connector that requires user action to upgrade.",
+            title="ConnectorBreakingChanges",
+        ),
+    ]
 
 
 class VersionBreakingChangeDeadlineAction(Enum):
