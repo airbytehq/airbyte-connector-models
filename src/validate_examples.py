@@ -45,14 +45,13 @@ def validate_example_file(file_path: pathlib.Path) -> tuple[bool, str | None]:
 
     # Check that smoke test scenarios are present if this is a smoke test example
     if "smoke" in file_path.name.lower() or any(
-        suite.suite == "smokeTests"
+        suite.suite is not None and suite.suite.value == "smokeTests"
         for suite in (model.data.connector_test_suites_options or [])
-        if suite.suite is not None
     ):
         smoke_test_suites = [
             suite
             for suite in (model.data.connector_test_suites_options or [])
-            if suite.suite == "smokeTests"
+            if suite.suite is not None and suite.suite.value == "smokeTests"
         ]
         if smoke_test_suites:
             for suite in smoke_test_suites:
