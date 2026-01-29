@@ -1,10 +1,9 @@
 # Copyright (c) 2025 Airbyte, Inc., all rights reserved.
 
-
 from __future__ import annotations
 
 from datetime import date
-from enum import Enum
+from enum import Enum, IntEnum
 from typing import Annotated, Any, Literal
 from uuid import UUID
 
@@ -27,32 +26,6 @@ class AllowedHosts(BaseModel):
     ] = None
 
 
-# Defined above BreakingChangeScope which depends on it.
-class StreamBreakingChangeScope(BaseModel):
-    """
-    A scope that can be used to limit the impact of a breaking change to specific streams.
-    """
-
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    scopeType: Literal["stream"]
-    impactedScopes: Annotated[
-        list[str],
-        Field(
-            description="List of streams that are impacted by the breaking change.",
-            min_length=1,
-        ),
-    ]
-
-
-class BreakingChangeScope(RootModel[StreamBreakingChangeScope]):
-    root: Annotated[
-        StreamBreakingChangeScope,
-        Field(description="A scope that can be used to limit the impact of a breaking change."),
-    ]
-
-
 class ConnectorMetadataDefinitionV0(BaseModel):
     """
     describes the metadata of a connector
@@ -61,7 +34,7 @@ class ConnectorMetadataDefinitionV0(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    metadataSpecVersion: str
+    metadata_spec_version: Annotated[str, Field(alias="metadataSpecVersion")]
     data: ConnectorMetadataDefinitionV0Data
 
 
@@ -79,7 +52,7 @@ class ConnectorMetadataDefinitionV0ActorDefinitionResourceRequirements(BaseModel
             description="if set, these are the requirements that should be set for ALL jobs run for this actor definition."
         ),
     ] = None
-    jobSpecific: list[JobTypeResourceLimit] | None = None
+    job_specific: Annotated[list[JobTypeResourceLimit] | None, Field(alias="jobSpecific")] = None
 
 
 class ConnectorMetadataDefinitionV0Data(BaseModel):
@@ -88,59 +61,77 @@ class ConnectorMetadataDefinitionV0Data(BaseModel):
     )
     name: str
     icon: str | None = None
-    definitionId: UUID
-    connectorBuildOptions: Annotated[
+    definition_id: Annotated[UUID, Field(alias="definitionId")]
+    connector_build_options: Annotated[
         ConnectorMetadataDefinitionV0DataConnectorBuildOptions | None,
         Field(
+            alias="connectorBuildOptions",
             description="metadata specific to the build process.",
             title="ConnectorBuildOptions",
         ),
     ] = None
-    connectorTestSuitesOptions: (
-        list[ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptions] | None
-    ) = None
-    connectorType: ConnectorMetadataDefinitionV0DataConnectorType
-    dockerRepository: str
-    dockerImageTag: str
-    supportsDbt: bool | None = None
-    supportsNormalization: bool | None = None
+    connector_test_suites_options: Annotated[
+        list[ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptions] | None,
+        Field(alias="connectorTestSuitesOptions"),
+    ] = None
+    connector_type: Annotated[
+        ConnectorMetadataDefinitionV0DataConnectorType, Field(alias="connectorType")
+    ]
+    docker_repository: Annotated[str, Field(alias="dockerRepository")]
+    docker_image_tag: Annotated[str, Field(alias="dockerImageTag")]
+    supports_dbt: Annotated[bool | None, Field(alias="supportsDbt")] = None
+    supports_normalization: Annotated[bool | None, Field(alias="supportsNormalization")] = None
     license: str
-    documentationUrl: AnyUrl
-    externalDocumentationUrls: Annotated[
+    documentation_url: Annotated[AnyUrl, Field(alias="documentationUrl")]
+    external_documentation_urls: Annotated[
         list[ConnectorMetadataDefinitionV0DataExternalDocumentationUrl] | None,
         Field(
-            description="An array of external vendor documentation URLs (changelogs, API references, deprecation notices, etc.)"
+            alias="externalDocumentationUrls",
+            description="An array of external vendor documentation URLs (changelogs, API references, deprecation notices, etc.)",
         ),
     ] = None
-    githubIssueLabel: str
-    maxSecondsBetweenMessages: Annotated[
+    github_issue_label: Annotated[str, Field(alias="githubIssueLabel")]
+    max_seconds_between_messages: Annotated[
         int | None,
         Field(
-            description="Maximum delay between 2 airbyte protocol messages, in second. The source will timeout if this delay is reached"
+            alias="maxSecondsBetweenMessages",
+            description="Maximum delay between 2 airbyte protocol messages, in second. The source will timeout if this delay is reached",
         ),
     ] = None
-    releaseDate: Annotated[
+    release_date: Annotated[
         date | None,
-        Field(description="The date when this connector was first released, in yyyy-mm-dd format."),
+        Field(
+            alias="releaseDate",
+            description="The date when this connector was first released, in yyyy-mm-dd format.",
+        ),
     ] = None
-    protocolVersion: Annotated[
+    protocol_version: Annotated[
         str | None,
-        Field(description="the Airbyte Protocol version supported by the connector"),
+        Field(
+            alias="protocolVersion",
+            description="the Airbyte Protocol version supported by the connector",
+        ),
     ] = None
-    erdUrl: Annotated[str | None, Field(description="The URL where you can visualize the ERD")] = (
-        None
-    )
-    connectorSubtype: ConnectorMetadataDefinitionV0DataConnectorSubtype
-    releaseStage: Annotated[
+    erd_url: Annotated[
+        str | None,
+        Field(alias="erdUrl", description="The URL where you can visualize the ERD"),
+    ] = None
+    connector_subtype: Annotated[
+        ConnectorMetadataDefinitionV0DataConnectorSubtype,
+        Field(alias="connectorSubtype"),
+    ]
+    release_stage: Annotated[
         ConnectorMetadataDefinitionV0DataReleaseStage,
         Field(
+            alias="releaseStage",
             description="enum that describes a connector's release stage",
             title="ReleaseStage",
         ),
     ]
-    supportLevel: Annotated[
+    support_level: Annotated[
         ConnectorMetadataDefinitionV0DataSupportLevel | None,
         Field(
+            alias="supportLevel",
             description="enum that describes a connector's release stage",
             title="SupportLevel",
         ),
@@ -151,10 +142,14 @@ class ConnectorMetadataDefinitionV0Data(BaseModel):
             description="An array of tags that describe the connector. E.g: language:python, keyword:rds, etc."
         ),
     ] = []
-    registryOverrides: ConnectorMetadataDefinitionV0DataRegistryOverrides | None = None
-    allowedHosts: Annotated[
+    registry_overrides: Annotated[
+        ConnectorMetadataDefinitionV0DataRegistryOverrides | None,
+        Field(alias="registryOverrides"),
+    ] = None
+    allowed_hosts: Annotated[
         ConnectorMetadataDefinitionV0DataAllowedHosts | None,
         Field(
+            alias="allowedHosts",
             description="A connector's allowed hosts.  If present, the platform will limit communication to only hosts which are listed in `AllowedHosts.hosts`.",
             title="AllowedHosts",
         ),
@@ -166,23 +161,26 @@ class ConnectorMetadataDefinitionV0Data(BaseModel):
             title="ConnectorReleases",
         ),
     ] = None
-    normalizationConfig: Annotated[
+    normalization_config: Annotated[
         ConnectorMetadataDefinitionV0DataNormalizationDestinationDefinitionConfig | None,
         Field(
+            alias="normalizationConfig",
             description="describes a normalization config for destination definition",
             title="NormalizationDestinationDefinitionConfig",
         ),
     ] = None
-    suggestedStreams: Annotated[
+    suggested_streams: Annotated[
         ConnectorMetadataDefinitionV0DataSuggestedStreams | None,
         Field(
+            alias="suggestedStreams",
             description="A source's suggested streams.  These will be suggested by default for new connections using this source.  Otherwise, all streams will be selected.  This is useful for when your source has a lot of streams, but the average user will only want a subset of them synced.",
             title="SuggestedStreams",
         ),
     ] = None
-    resourceRequirements: Annotated[
+    resource_requirements: Annotated[
         ConnectorMetadataDefinitionV0DataActorDefinitionResourceRequirements | None,
         Field(
+            alias="resourceRequirements",
             description="actor definition specific resource requirements",
             title="ActorDefinitionResourceRequirements",
         ),
@@ -191,14 +189,15 @@ class ConnectorMetadataDefinitionV0Data(BaseModel):
         ConnectorMetadataDefinitionV0DataAirbyteInternal | None,
         Field(description="Fields for internal use only", title="AirbyteInternal"),
     ] = None
-    remoteRegistries: Annotated[
+    remote_registries: Annotated[
         ConnectorMetadataDefinitionV0DataRemoteRegistries | None,
         Field(
+            alias="remoteRegistries",
             description="describes how the connector is published to remote registries",
             title="RemoteRegistries",
         ),
     ] = None
-    supportsRefreshes: bool | None = False
+    supports_refreshes: Annotated[bool | None, Field(alias="supportsRefreshes")] = False
     generated: Annotated[
         ConnectorMetadataDefinitionV0DataGeneratedFields | None,
         Field(
@@ -206,11 +205,11 @@ class ConnectorMetadataDefinitionV0Data(BaseModel):
             title="GeneratedFields",
         ),
     ] = None
-    supportsFileTransfer: bool | None = False
-    supportsDataActivation: bool | None = False
-    connectorIPCOptions: Annotated[
+    supports_file_transfer: Annotated[bool | None, Field(alias="supportsFileTransfer")] = False
+    supports_data_activation: Annotated[bool | None, Field(alias="supportsDataActivation")] = False
+    connector_ipc_options: Annotated[
         ConnectorMetadataDefinitionV0DataConnectorIPCOptions | None,
-        Field(title="ConnectorIPCOptions"),
+        Field(alias="connectorIPCOptions", title="ConnectorIPCOptions"),
     ] = None
 
 
@@ -228,7 +227,7 @@ class ConnectorMetadataDefinitionV0DataActorDefinitionResourceRequirements(BaseM
             description="if set, these are the requirements that should be set for ALL jobs run for this actor definition."
         ),
     ] = None
-    jobSpecific: list[JobTypeResourceLimit] | None = None
+    job_specific: Annotated[list[JobTypeResourceLimit] | None, Field(alias="jobSpecific")] = None
 
 
 class ConnectorMetadataDefinitionV0DataAirbyteInternal(BaseModel):
@@ -241,16 +240,17 @@ class ConnectorMetadataDefinitionV0DataAirbyteInternal(BaseModel):
     )
     sl: ConnectorMetadataDefinitionV0DataAirbyteInternalSl | None = None
     ql: ConnectorMetadataDefinitionV0DataAirbyteInternalQl | None = None
-    isEnterprise: bool | None = False
-    requireVersionIncrementsInPullRequests: Annotated[
+    is_enterprise: Annotated[bool | None, Field(alias="isEnterprise")] = False
+    require_version_increments_in_pull_requests: Annotated[
         bool | None,
         Field(
-            description="When false, version increment checks will be skipped for this connector"
+            alias="requireVersionIncrementsInPullRequests",
+            description="When false, version increment checks will be skipped for this connector",
         ),
     ] = True
 
 
-class ConnectorMetadataDefinitionV0DataAirbyteInternalQl(Enum):
+class ConnectorMetadataDefinitionV0DataAirbyteInternalQl(IntEnum):
     integer_0 = 0
     integer_100 = 100
     integer_200 = 200
@@ -260,7 +260,7 @@ class ConnectorMetadataDefinitionV0DataAirbyteInternalQl(Enum):
     integer_600 = 600
 
 
-class ConnectorMetadataDefinitionV0DataAirbyteInternalSl(Enum):
+class ConnectorMetadataDefinitionV0DataAirbyteInternalSl(IntEnum):
     integer_0 = 0
     integer_100 = 100
     integer_200 = 200
@@ -291,14 +291,17 @@ class ConnectorMetadataDefinitionV0DataConnectorBuildOptions(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    baseImage: str | None = None
+    base_image: Annotated[str | None, Field(alias="baseImage")] = None
 
 
 class ConnectorMetadataDefinitionV0DataConnectorIPCOptions(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    dataChannel: ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannel
+    data_channel: Annotated[
+        ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannel,
+        Field(alias="dataChannel"),
+    ]
 
 
 class ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannel(BaseModel):
@@ -306,25 +309,29 @@ class ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannel(BaseModel)
         extra="forbid",
     )
     version: str
-    supportedSerialization: list[
-        ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannelSupportedSerializationEnum
+    supported_serialization: Annotated[
+        list[
+            ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannelSupportedSerializationEnum
+        ],
+        Field(alias="supportedSerialization"),
     ]
-    supportedTransport: list[
-        ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannelSupportedTransportEnum
+    supported_transport: Annotated[
+        list[ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannelSupportedTransportEnum],
+        Field(alias="supportedTransport"),
     ]
 
 
 class ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannelSupportedSerializationEnum(
     Enum
 ):
-    JSONL = "JSONL"
-    PROTOBUF = "PROTOBUF"
-    FLATBUFFERS = "FLATBUFFERS"
+    jsonl = "JSONL"
+    protobuf = "PROTOBUF"
+    flatbuffers = "FLATBUFFERS"
 
 
 class ConnectorMetadataDefinitionV0DataConnectorIPCOptionsDataChannelSupportedTransportEnum(Enum):
-    STDIO = "STDIO"
-    SOCKET = "SOCKET"
+    stdio = "STDIO"
+    socket = "SOCKET"
 
 
 class ConnectorMetadataDefinitionV0DataConnectorReleases(BaseModel):
@@ -335,24 +342,27 @@ class ConnectorMetadataDefinitionV0DataConnectorReleases(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    rolloutConfiguration: Annotated[
+    rollout_configuration: Annotated[
         ConnectorMetadataDefinitionV0DataConnectorReleasesRolloutConfiguration | None,
         Field(
+            alias="rolloutConfiguration",
             description="configuration for the rollout of a connector",
             title="RolloutConfiguration",
         ),
     ] = None
-    breakingChanges: Annotated[
-        dict[str, VersionBreakingChange] | None,
+    breaking_changes: Annotated[
+        ConnectorMetadataDefinitionV0DataConnectorReleasesConnectorBreakingChanges | None,
         Field(
+            alias="breakingChanges",
             description="Each entry denotes a breaking change in a specific version of a connector that requires user action to upgrade.",
             title="ConnectorBreakingChanges",
         ),
     ] = None
-    migrationDocumentationUrl: Annotated[
+    migration_documentation_url: Annotated[
         AnyUrl | None,
         Field(
-            description="URL to documentation on how to migrate from the previous version to the current version. Defaults to ${documentationUrl}-migrations"
+            alias="migrationDocumentationUrl",
+            description="URL to documentation on how to migrate from the previous version to the current version. Defaults to ${documentationUrl}-migrations",
         ),
     ] = None
 
@@ -365,29 +375,35 @@ class ConnectorMetadataDefinitionV0DataConnectorReleasesRolloutConfiguration(Bas
     model_config = ConfigDict(
         extra="forbid",
     )
-    enableProgressiveRollout: Annotated[
+    enable_progressive_rollout: Annotated[
         bool | None,
-        Field(description="Whether to enable progressive rollout for the connector."),
+        Field(
+            alias="enableProgressiveRollout",
+            description="Whether to enable progressive rollout for the connector.",
+        ),
     ] = False
-    initialPercentage: Annotated[
+    initial_percentage: Annotated[
         int | None,
         Field(
+            alias="initialPercentage",
             description="The percentage of users that should receive the new version initially.",
             ge=0,
             le=100,
         ),
     ] = 0
-    maxPercentage: Annotated[
+    max_percentage: Annotated[
         int | None,
         Field(
+            alias="maxPercentage",
             description="The percentage of users who should receive the release candidate during the test phase before full rollout.",
             ge=0,
             le=100,
         ),
     ] = 50
-    advanceDelayMinutes: Annotated[
+    advance_delay_minutes: Annotated[
         int | None,
         Field(
+            alias="advanceDelayMinutes",
             description="The number of minutes to wait before advancing the rollout percentage.",
             ge=10,
         ),
@@ -417,13 +433,25 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptions(BaseModel):
         ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSuite,
         Field(description="Name of the configured test suite"),
     ]
-    testSecrets: Annotated[
+    test_secrets: Annotated[
         list[ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecret] | None,
-        Field(description="List of secrets required to run the test suite"),
+        Field(
+            alias="testSecrets",
+            description="List of secrets required to run the test suite",
+        ),
     ] = None
-    testConnections: Annotated[
+    test_connections: Annotated[
         list[ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsTestConnections] | None,
-        Field(description="List of sandbox cloud connections that tests can be run against"),
+        Field(
+            alias="testConnections",
+            description="List of sandbox cloud connections that tests can be run against",
+        ),
+    ] = None
+    scenarios: Annotated[
+        list[ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSmokeTestScenario] | None,
+        Field(
+            description="List of smoke test scenarios (only applicable when suite is 'smokeTests')"
+        ),
     ] = None
 
 
@@ -436,13 +464,17 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecret(BaseModel
         extra="forbid",
     )
     name: Annotated[str, Field(description="The secret name in the secret store")]
-    fileName: Annotated[
+    file_name: Annotated[
         str | None,
-        Field(description="The name of the file to which the secret value would be persisted"),
+        Field(
+            alias="fileName",
+            description="The name of the file to which the secret value would be persisted",
+        ),
     ] = None
-    secretStore: Annotated[
+    secret_store: Annotated[
         ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStore,
         Field(
+            alias="secretStore",
             description="An object describing a secret store metadata",
             title="SecretStore",
         ),
@@ -474,7 +506,72 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSecretSecretStor
     The type of the secret store
     """
 
-    GSM = "GSM"
+    gsm = "GSM"
+
+
+class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSmokeTestScenario(BaseModel):
+    """
+    A single smoke test scenario configuration for a connector.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    name: Annotated[
+        str,
+        Field(
+            description="Name of the test scenario (e.g., 'default', 'invalid_config', 'oauth_config')"
+        ),
+    ]
+    config_file: Annotated[
+        str | None,
+        Field(
+            alias="configFile",
+            description="Relative path to the config file to use for this scenario",
+        ),
+    ] = None
+    config_settings: Annotated[
+        dict[str, Any] | None,
+        Field(
+            alias="configSettings",
+            description="Optional dictionary of config settings to override or supplement configFile settings",
+        ),
+    ] = None
+    expect_failure: Annotated[
+        bool | None,
+        Field(
+            alias="expectFailure",
+            description="Whether the scenario is expected to fail",
+        ),
+    ] = False
+    only_streams: Annotated[
+        list[str] | None,
+        Field(
+            alias="onlyStreams",
+            description="List of stream names to include in the scenario (if specified, only these streams will be tested)",
+        ),
+    ] = None
+    exclude_streams: Annotated[
+        list[str] | None,
+        Field(
+            alias="excludeStreams",
+            description="List of stream names to exclude from the scenario",
+        ),
+    ] = None
+    suggested_streams_only: Annotated[
+        bool | None,
+        Field(
+            alias="suggestedStreamsOnly",
+            description="Whether to limit testing to the connector's suggested streams list (from data.suggestedStreams)",
+        ),
+    ] = False
+    configured_catalog_path: Annotated[
+        str | None,
+        Field(
+            alias="configuredCatalogPath",
+            description="Path to a pre-configured catalog file for the scenario",
+        ),
+    ] = None
 
 
 class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSuite(Enum):
@@ -482,10 +579,11 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSuite(Enum):
     Name of the configured test suite
     """
 
-    unitTests = "unitTests"
-    integrationTests = "integrationTests"
-    acceptanceTests = "acceptanceTests"
-    liveTests = "liveTests"
+    unit_tests = "unitTests"
+    integration_tests = "integrationTests"
+    acceptance_tests = "acceptanceTests"
+    live_tests = "liveTests"
+    smoke_tests = "smokeTests"
 
 
 class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsTestConnections(BaseModel):
@@ -515,9 +613,12 @@ class ConnectorMetadataDefinitionV0DataExternalDocumentationUrl(BaseModel):
         ConnectorMetadataDefinitionV0DataExternalDocumentationUrlType | None,
         Field(description="Category of documentation"),
     ] = None
-    requiresLogin: Annotated[
+    requires_login: Annotated[
         bool | None,
-        Field(description="Whether the URL requires authentication to access"),
+        Field(
+            alias="requiresLogin",
+            description="Whether the URL requires authentication to access",
+        ),
     ] = False
 
 
@@ -567,7 +668,9 @@ class ConnectorMetadataDefinitionV0DataGeneratedFields(BaseModel):
             title="ConnectorMetrics",
         ),
     ] = None
-    sbomUrl: Annotated[str | None, Field(description="URL to the SBOM file")] = None
+    sbom_url: Annotated[str | None, Field(alias="sbomUrl", description="URL to the SBOM file")] = (
+        None
+    )
 
 
 class ConnectorMetadataDefinitionV0DataGeneratedFieldsConnectorMetrics(BaseModel):
@@ -628,22 +731,25 @@ class ConnectorMetadataDefinitionV0DataNormalizationDestinationDefinitionConfig(
     model_config = ConfigDict(
         extra="allow",
     )
-    normalizationRepository: Annotated[
+    normalization_repository: Annotated[
         str,
         Field(
-            description="a field indicating the name of the repository to be used for normalization. If the value of the flag is NULL - normalization is not used."
+            alias="normalizationRepository",
+            description="a field indicating the name of the repository to be used for normalization. If the value of the flag is NULL - normalization is not used.",
         ),
     ]
-    normalizationTag: Annotated[
+    normalization_tag: Annotated[
         str,
         Field(
-            description="a field indicating the tag of the docker repository to be used for normalization."
+            alias="normalizationTag",
+            description="a field indicating the tag of the docker repository to be used for normalization.",
         ),
     ]
-    normalizationIntegrationType: Annotated[
+    normalization_integration_type: Annotated[
         str,
         Field(
-            description="a field indicating the type of integration dialect to use for normalization."
+            alias="normalizationIntegrationType",
+            description="a field indicating the type of integration dialect to use for normalization.",
         ),
     ]
 
@@ -666,21 +772,23 @@ class ConnectorMetadataDefinitionV0DataRegistryOverridesRegistryOverrides(BaseMo
     )
     enabled: bool
     name: str | None = None
-    dockerRepository: str | None = None
-    dockerImageTag: str | None = None
-    supportsDbt: bool | None = None
-    supportsNormalization: bool | None = None
+    docker_repository: Annotated[str | None, Field(alias="dockerRepository")] = None
+    docker_image_tag: Annotated[str | None, Field(alias="dockerImageTag")] = None
+    supports_dbt: Annotated[bool | None, Field(alias="supportsDbt")] = None
+    supports_normalization: Annotated[bool | None, Field(alias="supportsNormalization")] = None
     license: str | None = None
-    documentationUrl: AnyUrl | None = None
-    connectorSubtype: str | None = None
-    allowedHosts: AllowedHosts | None = None
-    normalizationConfig: (
-        ConnectorMetadataDefinitionV0NormalizationDestinationDefinitionConfig | None
-    ) = None
-    suggestedStreams: SuggestedStreams | None = None
-    resourceRequirements: (
-        ConnectorMetadataDefinitionV0ActorDefinitionResourceRequirements | None
-    ) = None
+    documentation_url: Annotated[AnyUrl | None, Field(alias="documentationUrl")] = None
+    connector_subtype: Annotated[str | None, Field(alias="connectorSubtype")] = None
+    allowed_hosts: Annotated[AllowedHosts | None, Field(alias="allowedHosts")] = None
+    normalization_config: Annotated[
+        ConnectorMetadataDefinitionV0NormalizationDestinationDefinitionConfig | None,
+        Field(alias="normalizationConfig"),
+    ] = None
+    suggested_streams: Annotated[SuggestedStreams | None, Field(alias="suggestedStreams")] = None
+    resource_requirements: Annotated[
+        ConnectorMetadataDefinitionV0ActorDefinitionResourceRequirements | None,
+        Field(alias="resourceRequirements"),
+    ] = None
 
 
 class ConnectorMetadataDefinitionV0DataReleaseStage(Enum):
@@ -739,22 +847,25 @@ class ConnectorMetadataDefinitionV0NormalizationDestinationDefinitionConfig(Base
     model_config = ConfigDict(
         extra="allow",
     )
-    normalizationRepository: Annotated[
+    normalization_repository: Annotated[
         str,
         Field(
-            description="a field indicating the name of the repository to be used for normalization. If the value of the flag is NULL - normalization is not used."
+            alias="normalizationRepository",
+            description="a field indicating the name of the repository to be used for normalization. If the value of the flag is NULL - normalization is not used.",
         ),
     ]
-    normalizationTag: Annotated[
+    normalization_tag: Annotated[
         str,
         Field(
-            description="a field indicating the tag of the docker repository to be used for normalization."
+            alias="normalizationTag",
+            description="a field indicating the tag of the docker repository to be used for normalization.",
         ),
     ]
-    normalizationIntegrationType: Annotated[
+    normalization_integration_type: Annotated[
         str,
         Field(
-            description="a field indicating the type of integration dialect to use for normalization."
+            alias="normalizationIntegrationType",
+            description="a field indicating the type of integration dialect to use for normalization.",
         ),
     ]
 
@@ -769,21 +880,23 @@ class ConnectorMetadataDefinitionV0RegistryOverrides(BaseModel):
     )
     enabled: bool
     name: str | None = None
-    dockerRepository: str | None = None
-    dockerImageTag: str | None = None
-    supportsDbt: bool | None = None
-    supportsNormalization: bool | None = None
+    docker_repository: Annotated[str | None, Field(alias="dockerRepository")] = None
+    docker_image_tag: Annotated[str | None, Field(alias="dockerImageTag")] = None
+    supports_dbt: Annotated[bool | None, Field(alias="supportsDbt")] = None
+    supports_normalization: Annotated[bool | None, Field(alias="supportsNormalization")] = None
     license: str | None = None
-    documentationUrl: AnyUrl | None = None
-    connectorSubtype: str | None = None
-    allowedHosts: AllowedHosts | None = None
-    normalizationConfig: (
-        ConnectorMetadataDefinitionV0NormalizationDestinationDefinitionConfig | None
-    ) = None
-    suggestedStreams: SuggestedStreams | None = None
-    resourceRequirements: (
-        ConnectorMetadataDefinitionV0ActorDefinitionResourceRequirements | None
-    ) = None
+    documentation_url: Annotated[AnyUrl | None, Field(alias="documentationUrl")] = None
+    connector_subtype: Annotated[str | None, Field(alias="connectorSubtype")] = None
+    allowed_hosts: Annotated[AllowedHosts | None, Field(alias="allowedHosts")] = None
+    normalization_config: Annotated[
+        ConnectorMetadataDefinitionV0NormalizationDestinationDefinitionConfig | None,
+        Field(alias="normalizationConfig"),
+    ] = None
+    suggested_streams: Annotated[SuggestedStreams | None, Field(alias="suggestedStreams")] = None
+    resource_requirements: Annotated[
+        ConnectorMetadataDefinitionV0ActorDefinitionResourceRequirements | None,
+        Field(alias="resourceRequirements"),
+    ] = None
 
 
 class JobTypeResourceLimit(BaseModel):
@@ -794,16 +907,18 @@ class JobTypeResourceLimit(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    jobType: Annotated[
+    job_type: Annotated[
         JobTypeResourceLimitJobType,
         Field(
+            alias="jobType",
             description="enum that describes the different types of jobs that the platform runs.",
             title="JobType",
         ),
     ]
-    resourceRequirements: Annotated[
+    resource_requirements: Annotated[
         JobTypeResourceLimitResourceRequirements,
         Field(
+            alias="resourceRequirements",
             description="generic configuration for pod source requirements",
             title="ResourceRequirements",
         ),
@@ -847,7 +962,9 @@ class PyPi(BaseModel):
         extra="forbid",
     )
     enabled: bool
-    packageName: Annotated[str, Field(description="The name of the package on PyPi.")]
+    package_name: Annotated[
+        str, Field(alias="packageName", description="The name of the package on PyPi.")
+    ]
 
 
 class ResourceRequirements(BaseModel):
@@ -862,6 +979,32 @@ class ResourceRequirements(BaseModel):
     cpu_limit: str | None = None
     memory_request: str | None = None
     memory_limit: str | None = None
+
+
+class StreamBreakingChangeScope(BaseModel):
+    """
+    A scope that can be used to limit the impact of a breaking change to specific streams.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    scope_type: Annotated[Literal["stream"], Field(alias="scopeType")]
+    impacted_scopes: Annotated[
+        list[str],
+        Field(
+            alias="impactedScopes",
+            description="List of streams that are impacted by the breaking change.",
+            min_length=1,
+        ),
+    ]
+
+
+class BreakingChangeScope(RootModel[StreamBreakingChangeScope]):
+    root: Annotated[
+        StreamBreakingChangeScope,
+        Field(description="A scope that can be used to limit the impact of a breaking change."),
+    ]
 
 
 class SuggestedStreams(BaseModel):
@@ -888,30 +1031,48 @@ class VersionBreakingChange(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    upgradeDeadline: Annotated[
+    upgrade_deadline: Annotated[
         date,
         Field(
-            description="The deadline by which to upgrade before the breaking change takes effect."
+            alias="upgradeDeadline",
+            description="The deadline by which to upgrade before the breaking change takes effect.",
         ),
     ]
     message: Annotated[str, Field(description="Descriptive message detailing the breaking change.")]
-    deadlineAction: Annotated[
+    deadline_action: Annotated[
         VersionBreakingChangeDeadlineAction | None,
-        Field(description="Action to do when the deadline is reached."),
-    ] = None
-    migrationDocumentationUrl: Annotated[
-        AnyUrl | None,
         Field(
-            description="URL to documentation on how to migrate to the current version. Defaults to ${documentationUrl}-migrations#${version}"
+            alias="deadlineAction",
+            description="Action to do when the deadline is reached.",
         ),
     ] = None
-    scopedImpact: Annotated[
+    migration_documentation_url: Annotated[
+        AnyUrl | None,
+        Field(
+            alias="migrationDocumentationUrl",
+            description="URL to documentation on how to migrate to the current version. Defaults to ${documentationUrl}-migrations#${version}",
+        ),
+    ] = None
+    scoped_impact: Annotated[
         list[BreakingChangeScope] | None,
         Field(
+            alias="scopedImpact",
             description="List of scopes that are impacted by the breaking change. If not specified, the breaking change cannot be scoped to reduce impact via the supported scope types.",
             min_length=1,
         ),
     ] = None
+
+
+class ConnectorMetadataDefinitionV0DataConnectorReleasesConnectorBreakingChanges(
+    RootModel[dict[str, VersionBreakingChange]]
+):
+    root: Annotated[
+        dict[str, VersionBreakingChange],
+        Field(
+            description="Each entry denotes a breaking change in a specific version of a connector that requires user action to upgrade.",
+            title="ConnectorBreakingChanges",
+        ),
+    ]
 
 
 class VersionBreakingChangeDeadlineAction(Enum):
