@@ -1,0 +1,75 @@
+# Example metadata.yaml demonstrating advanced smoke test scenario options
+# This file shows all available smoke test scenario configuration options
+data:
+  allowedHosts:
+    hosts:
+      - "api.example.com"
+  registryOverrides:
+    oss:
+      enabled: true
+    cloud:
+      enabled: true
+  connectorSubtype: api
+  connectorType: source
+  definitionId: 12345678-1234-1234-1234-123456789012
+  dockerImageTag: 2.0.0
+  dockerRepository: airbyte/source-example
+  githubIssueLabel: source-example
+  icon: example.svg
+  license: MIT
+  name: Example Source
+  releaseDate: "2024-01-01"
+  releaseStage: generally_available
+  supportLevel: certified
+  documentationUrl: https://docs.airbyte.com/integrations/sources/example
+  tags:
+    - cdk:python
+    - language:python
+  connectorTestSuitesOptions:
+    # Smoke test suite demonstrating all scenario options
+    - suite: smokeTests
+      testSecrets:
+        - name: SECRET_SOURCE-EXAMPLE__CREDS
+          fileName: config.json
+          secretStore:
+            type: GSM
+            alias: airbyte-connector-testing-secret-store
+      scenarios:
+        # Minimal scenario - just a name
+        - name: default
+        # Scenario with custom config file
+        - name: alternate_config
+          configFile: config_alternate.json
+        # Scenario with inline config settings (overrides)
+        - name: with_config_overrides
+          configSettings:
+            start_date: "2024-01-01"
+            batch_size: 100
+        # Scenario filtering to specific streams
+        - name: users_only
+          onlyStreams:
+            - users
+        # Scenario excluding specific streams
+        - name: exclude_audit_logs
+          excludeStreams:
+            - audit_logs
+            - system_events
+        # Scenario using only suggested streams
+        - name: suggested_streams
+          suggestedStreamsOnly: true
+        # Scenario with custom configured catalog
+        - name: custom_catalog
+          configuredCatalogPath: custom_catalog.json
+        # Scenario expecting failure (for negative testing)
+        - name: invalid_credentials
+          configFile: invalid_config.json
+          expectFailure: true
+        # Combined options
+        - name: complex_scenario
+          configFile: config_v2.json
+          onlyStreams:
+            - orders
+            - products
+          configSettings:
+            page_size: 50
+metadataSpecVersion: "1.0"

@@ -58,3 +58,6 @@ jobs:
       - name: Run Pytest (Fast)
         timeout-minutes: 10
         run: uv run pytest --exitfirst -v
+
+      - name: Validate Example Metadata Files
+        run: uv run poe validate-examples

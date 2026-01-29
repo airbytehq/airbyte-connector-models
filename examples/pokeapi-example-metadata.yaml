@@ -1,0 +1,66 @@
+# Example metadata.yaml for source-pokeapi with smoke test scenarios
+# This file demonstrates the smoke test configuration schema
+data:
+  allowedHosts:
+    hosts:
+      - "*"
+  registryOverrides:
+    oss:
+      enabled: true
+    cloud:
+      enabled: true
+  remoteRegistries:
+    pypi:
+      enabled: false
+      packageName: airbyte-source-pokeapi
+  connectorBuildOptions:
+    baseImage: docker.io/airbyte/source-declarative-manifest:7.6.5@sha256:a5ef859b9f6dde52bd914fbcddb088d4f1ccae4887ffb58b2282b80f119fdcbe
+  connectorSubtype: api
+  connectorType: source
+  definitionId: 6371b14b-bc68-4236-bfbd-468e8df8e968
+  dockerImageTag: 0.3.47
+  dockerRepository: airbyte/source-pokeapi
+  githubIssueLabel: source-pokeapi
+  icon: pokeapi.svg
+  license: ELv2
+  name: PokeAPI
+  releaseDate: "2020-05-14"
+  releaseStage: alpha
+  supportLevel: community
+  documentationUrl: https://docs.airbyte.com/integrations/sources/pokeapi
+  tags:
+    - cdk:low-code
+    - language:manifest-only
+  connectorTestSuitesOptions:
+    - suite: liveTests
+      testConnections:
+        - name: pokeapi_config_dev_null
+          id: 5a290dcf-b2cf-4768-ac2d-a1aaca90c186
+    - suite: acceptanceTests
+      testSecrets:
+        - name: SECRET_SOURCE-POKEAPI__CREDS
+          fileName: config.json
+          secretStore:
+            type: GSM
+            alias: airbyte-connector-testing-secret-store
+    # Smoke test suite with scenarios
+    - suite: smokeTests
+      testSecrets:
+        - name: SECRET_SOURCE-POKEAPI__CREDS
+          fileName: config.json
+          secretStore:
+            type: GSM
+            alias: airbyte-connector-testing-secret-store
+      scenarios:
+        - name: default
+        - name: pokemon_only
+          onlyStreams:
+            - pokemon
+        - name: exclude_berry
+          excludeStreams:
+            - berry
+  externalDocumentationUrls:
+    - title: PokeAPI documentation
+      url: https://pokeapi.co/docs/v2
+      type: api_reference
+metadataSpecVersion: "1.0"

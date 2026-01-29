@@ -67,3 +67,7 @@ sequence = ["bundle-metadata-schemas", "generate-registry"]
 [tasks.generate-all-consolidated]
 help = "Bundle schemas and generate both metadata and registry models"
 sequence = ["bundle-metadata-schemas", "generate-metadata-consolidated", "generate-registry"]
+
+[tasks.validate-examples]
+help = "Validate example metadata files against JSON schema and Pydantic models"
+cmd = "python -m src.validate_examples"
