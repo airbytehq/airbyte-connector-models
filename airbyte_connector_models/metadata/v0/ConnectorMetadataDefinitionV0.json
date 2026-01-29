@@ -167,40 +167,40 @@
                       "description": "Name of the test scenario (e.g., 'default', 'invalid_config', 'oauth_config')",
                       "type": "string"
                     },
-                    "config_file": {
+                    "configFile": {
                       "description": "Relative path to the config file to use for this scenario",
                       "type": "string"
                     },
-                    "config_settings": {
-                      "description": "Optional dictionary of config settings to override or supplement config_file settings",
+                    "configSettings": {
+                      "description": "Optional dictionary of config settings to override or supplement configFile settings",
                       "type": "object",
                       "additionalProperties": true
                     },
-                    "expect_failure": {
+                    "expectFailure": {
                       "description": "Whether the scenario is expected to fail",
                       "type": "boolean",
                       "default": false
                     },
-                    "only_streams": {
+                    "onlyStreams": {
                       "description": "List of stream names to include in the scenario (if specified, only these streams will be tested)",
                       "type": "array",
                       "items": {
                         "type": "string"
                       }
                     },
-                    "exclude_streams": {
+                    "excludeStreams": {
                       "description": "List of stream names to exclude from the scenario",
                       "type": "array",
                       "items": {
                         "type": "string"
                       }
                     },
-                    "suggested_streams_only": {
+                    "suggestedStreamsOnly": {
                       "description": "Whether to limit testing to the connector's suggested streams list (from data.suggestedStreams)",
                       "type": "boolean",
                       "default": false
                     },
-                    "configured_catalog_path": {
+                    "configuredCatalogPath": {
                       "description": "Path to a pre-configured catalog file for the scenario",
                       "type": "string"
                     }

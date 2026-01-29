@@ -470,36 +470,36 @@ class ConnectorMetadataDefinitionV0DataConnectorTestSuiteOptionsSmokeTestScenari
             description="Name of the test scenario (e.g., 'default', 'invalid_config', 'oauth_config')"
         ),
     ]
-    config_file: Annotated[
+    configFile: Annotated[
         str | None,
         Field(description="Relative path to the config file to use for this scenario"),
     ] = None
-    config_settings: Annotated[
+    configSettings: Annotated[
         dict[str, Any] | None,
         Field(
-            description="Optional dictionary of config settings to override or supplement config_file settings"
+            description="Optional dictionary of config settings to override or supplement configFile settings"
         ),
     ] = None
-    expect_failure: Annotated[
+    expectFailure: Annotated[
         bool | None, Field(description="Whether the scenario is expected to fail")
     ] = False
-    only_streams: Annotated[
+    onlyStreams: Annotated[
         list[str] | None,
         Field(
             description="List of stream names to include in the scenario (if specified, only these streams will be tested)"
         ),
     ] = None
-    exclude_streams: Annotated[
+    excludeStreams: Annotated[
         list[str] | None,
         Field(description="List of stream names to exclude from the scenario"),
     ] = None
-    suggested_streams_only: Annotated[
+    suggestedStreamsOnly: Annotated[
         bool | None,
         Field(
             description="Whether to limit testing to the connector's suggested streams list (from data.suggestedStreams)"
         ),
     ] = False
-    configured_catalog_path: Annotated[
+    configuredCatalogPath: Annotated[
         str | None,
         Field(description="Path to a pre-configured catalog file for the scenario"),
     ] = None
