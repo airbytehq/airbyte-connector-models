@@ -1,0 +1,59 @@
+# Example metadata.yaml for source-harvest with smoke test scenarios
+# This file demonstrates smoke test configuration with config file references
+data:
+  allowedHosts:
+    hosts:
+      - "*.harvestapp.com"
+  registryOverrides:
+    oss:
+      enabled: true
+    cloud:
+      enabled: true
+  connectorSubtype: api
+  connectorType: source
+  definitionId: fe2b4084-3386-4d3b-9f1a-e0637e164e50
+  dockerImageTag: 1.0.0
+  dockerRepository: airbyte/source-harvest
+  githubIssueLabel: source-harvest
+  icon: harvest.svg
+  license: MIT
+  name: Harvest
+  releaseDate: "2021-06-01"
+  releaseStage: generally_available
+  supportLevel: certified
+  documentationUrl: https://docs.airbyte.com/integrations/sources/harvest
+  tags:
+    - cdk:low-code
+    - language:manifest-only
+  connectorTestSuitesOptions:
+    - suite: acceptanceTests
+      testSecrets:
+        - name: SECRET_SOURCE-HARVEST__CREDS
+          fileName: config.json
+          secretStore:
+            type: GSM
+            alias: airbyte-connector-testing-secret-store
+    # Smoke test suite with multiple scenarios using different config files
+    - suite: smokeTests
+      testSecrets:
+        - name: SECRET_SOURCE-HARVEST__CREDS
+          fileName: config.json
+          secretStore:
+            type: GSM
+            alias: airbyte-connector-testing-secret-store
+        - name: SECRET_SOURCE-HARVEST__OAUTH_CREDS
+          fileName: config_oauth.json
+          secretStore:
+            type: GSM
+            alias: airbyte-connector-testing-secret-store
+      scenarios:
+        - name: default
+        - name: oauth_config
+          configFile: config_oauth.json
+        - name: time_entries_only
+          onlyStreams:
+            - time_entries
+        - name: expect_auth_failure
+          configFile: invalid_config.json
+          expectFailure: true
+metadataSpecVersion: "1.0"
