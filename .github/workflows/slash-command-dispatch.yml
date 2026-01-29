@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Slash Command Dispatch
         id: dispatch
-        uses: peter-evans/slash-command-dispatch@v4
+        uses: peter-evans/slash-command-dispatch@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           dispatch-type: workflow
